@@ -3,8 +3,9 @@
 const jsforce = require('jsforce');
 
 /**
- * This method only ouath to Salesforce.
+ * This method is responsible for ouath to Salesforce.
  * @param {object} serverlessContext 
+ * @param {object} SalesforceConnectionObject
  */
 const ouathSFDC = async(serverlessContext) => {
   try {
@@ -30,22 +31,13 @@ const ouathSFDC = async(serverlessContext) => {
   }
 }
 
-const getAuthToken = async(serverlessContext) => {
+/**
+ * Return the 
+ * @param {*} serverlessContext 
+ */
+const getAuthToken = async(serverlessContext, twilioClient, serverlessHelper) => {
   try {
-    const conn = new jsforce.Connection({
-      oauth2 : {
-        loginUrl : serverlessContext.SFDC_LOGIN_URL,
-        clientId : serverlessContext.SFDC_CONNECTED_APP_CONSUMER_KEY,
-        clientSecret : serverlessContext.SFDC_CONNECTED_APP_CONSUMER_SECRET,
-        redirectUri : serverlessContext.SFDC_CONNECTED_APP_CALLBACK_URL
-      }
-    });
-  
-    await conn.login(
-      serverlessContext.SFDC_USERNAME, 
-      serverlessContext.SFDC_PASSWORD + serverlessContext.SFDC_SECURITY_TOKEN
-    );
-    return conn;
+    
   } catch(e) {
     throw `\n
       Method: authSalesforce\n
@@ -55,10 +47,11 @@ const getAuthToken = async(serverlessContext) => {
 }
 
 /**
- * This method will return an instance of jsforce connection.
- * @param {*} serverlessContext 
+ * This method will return an instance of Salesforce Connection.
+ * @param {object} serverlessContext 
+ * @param {object} SalesforceConnectionObject
  */
-const getSfdcConnection = async(serverlessContext) => {
+const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
 
   } catch (e) {
