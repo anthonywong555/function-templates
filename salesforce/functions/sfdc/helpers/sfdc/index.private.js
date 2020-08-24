@@ -26,7 +26,7 @@ const ouathSFDCByUserAgent = async(serverlessContext) => {
     return conn;
   } catch(e) {
     throw `\n
-      Method: authSalesforce\n
+      Method: ouathSFDCByUserAgent\n
       Error: ${e}\n
     \n`;
   }
@@ -54,7 +54,8 @@ const getAuthToken = async(serverlessContext, twilioClient, serverlessHelper) =>
  */
 const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
-    
+    const sfdcConn = await ouathSFDCByUserAgent(serverlessContext);
+    return sfdcConn;
   } catch (e) {
     throw `\n
     Method: getSfdcConnection\n
