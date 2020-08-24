@@ -1,4 +1,7 @@
 {
   "name": "salesforce",
-  "dependencies": {}
+  "dependencies": {
+    "jsforce": "^1.9.3",
+    "twilio": "^3.49.0"
+  }
 }

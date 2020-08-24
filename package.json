@@ -22,11 +22,12 @@
     "husky": "^4.2.5",
     "inquirer": "^7.0.4",
     "jest-cli": "^24.8.0",
+    "jsforce": "^1.9.3",
     "listr": "^0.14.3",
     "log-symbols": "^3.0.0",
     "moment": "^2.24.0",
     "stripe": "^8.20.0",
-    "twilio": "^3.43.0"
+    "twilio": "^3.49.0"
   },
   "jest": {
     "testEnvironment": "node",
