@@ -62,4 +62,4 @@ const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClien
   }
 }
 
-module.exports = {};
+module.exports = {getSfdcConnection};

@@ -39,4 +39,27 @@ const read = async(twilioClient, {serviceSid, environmentSid}) => {
   }
 }
 
-module.exports = {create, fetch, read};
+const fetchByKey = async (twilioClient, {serviceSid, environmentSid, key}) => {
+  try {
+    const variables = await twilioClient.serverless
+      .services(serviceSid)
+      .environments(environmentSid)
+      .variables
+      .list();
+
+    let result = null;
+
+    for(const aVariable of variables) {
+      if(aVariable.key === key) {
+        result = aVariable;
+        break;
+      }
+    }
+
+    return result;
+  } catch (e) {
+    throw e;
+  }
+}
+
+module.exports = {create, fetch, read, fetchByKey};
