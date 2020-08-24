@@ -3,11 +3,12 @@
 const jsforce = require('jsforce');
 
 /**
- * This method is responsible for ouath to Salesforce.
+ * This method is responsible for ouath to Salesforce
+ * by User-Agent Flow.
  * @param {object} serverlessContext 
  * @param {object} SalesforceConnectionObject
  */
-const ouathSFDC = async(serverlessContext) => {
+const ouathSFDCByUserAgent = async(serverlessContext) => {
   try {
     const conn = new jsforce.Connection({
       oauth2 : {
@@ -53,7 +54,7 @@ const getAuthToken = async(serverlessContext, twilioClient, serverlessHelper) =>
  */
 const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
-
+    
   } catch (e) {
     throw `\n
     Method: getSfdcConnection\n

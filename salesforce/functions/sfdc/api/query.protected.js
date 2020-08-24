@@ -4,7 +4,6 @@ exports.handler = async (context, event, callback) => {
   try {
     const twilioClient = context.getTwilioClient();
     const serverlessHelper = loadServerlessModules();
-
     const result = await driver(context, event, serverlessHelper, twilioClient);
     return callback(null, result);
   } catch (e) {
@@ -16,7 +15,7 @@ const loadServerlessModules = () => {
   try {
     const functions = Runtime.getFunctions();
     const serverlessHelperPath = functions['sfdc/helpers/index'].path;
-    serverlessHelper = require(serverlessHelperPath);
+    const serverlessHelper = require(serverlessHelperPath);
     return serverlessHelper;
   } catch (e) {
     throw e;
