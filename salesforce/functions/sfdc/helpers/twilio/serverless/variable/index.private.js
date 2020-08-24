@@ -1,22 +1,42 @@
 'use strict';
 
-const create = async() => {
+const create = async(twilioClient, {serviceSid, environmentSid, payload}) => {
   try {
-    await twilioClient.serverless.services('ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-    .environments('ZEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-    .variables
-    .create({key: 'key', value: 'value'});
+    const result = await twilioClient.serverless
+      .services(serviceSid)
+      .environments(environmentSid)
+      .variables
+      .create(payload);
+    return result;
   } catch(e) {
     throw e;
   }
 }
 
-const fetch = async() => {
+const fetch = async(twilioClient, {serviceSid, environmentSid, variableSid}) => {
   try {
-
+    const result = await twilioClient.serverless
+      .services(serviceSid)
+      .environments(environmentSid)
+      .variables(variableSid)
+      .fetch();
+    return result;
   } catch(e) {
     throw e;
   }
 }
 
-module.exports = {create, fetch};
+const read = async(twilioClient, {serviceSid, environmentSid}) => {
+  try {
+    const result = await twilioClient.serverless
+      .services(serviceSid)
+      .environments(environmentSid)
+      .variables
+      .list();
+    return result;
+  } catch(e) {
+    throw e;
+  }
+}
+
+module.exports = {create, fetch, read};
