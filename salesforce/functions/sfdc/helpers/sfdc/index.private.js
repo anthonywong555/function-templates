@@ -3,6 +3,12 @@
 const jsforce = require('jsforce');
 
 /**
+ * This will be the key for serverless environment variable that will hold
+ * Salesforce oauth response.
+ */
+const SFDC_OAUTH_RESPONSE = 'SFDC_OAUTH_RESPONSE';
+
+/**
  * This method is responsible for ouath to Salesforce
  * by User-Agent Flow.
  * @param {object} serverlessContext 
@@ -25,16 +31,17 @@ const ouathSFDCByUserAgent = async(serverlessContext) => {
     );
     return conn;
   } catch(e) {
-    throw `\n
-      Method: ouathSFDCByUserAgent\n
-      Error: ${e}\n
-    \n`;
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'ouathSFDCByUserAgent', e);
   }
 }
 
 /**
- * Return the 
- * @param {*} serverlessContext 
+ * Returns the Salesforce Auth Token.
+ * Side Effect: It will update the Serverless Environment Variable ,SFDC_OAUTH_RESPONSE, if the Access Token expires.
+ * @param {Object} serverlessContext 
+ * @param {Object} serverlessHelper 
+ * @param {Object} twilioClient 
+ * @returns {String}
  */
 const getAuthToken = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
@@ -44,9 +51,23 @@ const getAuthToken = async(serverlessContext, serverlessHelper, twilioClient) =>
   }
 }
 
+/**
+ * Returns the Salesforce Instance URL.
+ * @param {Object} serverlessContext 
+ * @param {Object} serverlessHelper 
+ * @param {Object} twilioClient
+ * @returns {String} 
+ */
 const getInstanceURL = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
-    
+    const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
+    const sfdcOauthResponse = await serverlessHelper
+      .twilio
+      .serverless
+      .variable
+      .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
+    const {instanceUrl} = sfdcOauthResponse;
+    return instanceUrl;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getInstanceUrl', e);
   }
