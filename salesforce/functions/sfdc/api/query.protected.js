@@ -1,5 +1,12 @@
 'use strict';
 
+/**
+ * Twilio calls this method
+ * @param {Object} context 
+ * @param {Object} event 
+ * @param {Function} callback
+ * @returns {Object} 
+ */
 exports.handler = async (context, event, callback) => {
   try {
     const twilioClient = context.getTwilioClient();
@@ -11,6 +18,9 @@ exports.handler = async (context, event, callback) => {
   }
 };
 
+/**
+ * Loads up related helper methods.
+ */
 const loadServerlessModules = () => {
   try {
     const functions = Runtime.getFunctions();
@@ -22,6 +32,14 @@ const loadServerlessModules = () => {
   }
 }
 
+/**
+ * Main Driver of the Twilio Serverless Function
+ * @param {Object} serverlessContext 
+ * @param {Object} serverlessEvent 
+ * @param {Object} serverlessHelper 
+ * @param {Object} twilioClient 
+ * @returns {Object}
+ */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
     const {query} = serverlessEvent;
