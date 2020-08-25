@@ -1,6 +1,10 @@
 'use strict';
 
 /**
+ * This function allow user to make SOQL against Salesforce
+ */
+
+/**
  * Twilio calls this method
  * @param {Object} context 
  * @param {Object} event 

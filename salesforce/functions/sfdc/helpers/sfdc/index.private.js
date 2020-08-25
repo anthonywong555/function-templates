@@ -36,14 +36,19 @@ const ouathSFDCByUserAgent = async(serverlessContext) => {
  * Return the 
  * @param {*} serverlessContext 
  */
-const getAuthToken = async(serverlessContext, twilioClient, serverlessHelper) => {
+const getAuthToken = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
     
   } catch(e) {
-    throw `\n
-      Method: authSalesforce\n
-      Error: ${e}\n
-    \n`;
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getAuthToken', e);
+  }
+}
+
+const getInstanceURL = async(serverlessContext, serverlessHelper, twilioClient) => {
+  try {
+    
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getInstanceUrl', e);
   }
 }
 
@@ -54,13 +59,16 @@ const getAuthToken = async(serverlessContext, twilioClient, serverlessHelper) =>
  */
 const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
-    const sfdcConn = await ouathSFDCByUserAgent(serverlessContext);
+    const accessToken = await getAuthToken(serverlessContext, serverlessHelper, twilioClient);
+    const instanceUrl = await getInstanceURL(serverlessContext, serverlessHelper, twilioClient);
+    const sfdcConn = new jsforce.Connection({
+      accessToken,
+      instanceUrl
+    });
     return sfdcConn;
+
   } catch (e) {
-    throw `\n
-    Method: getSfdcConnection\n
-    Error: ${e}\n
-    \n`
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getSfdcConnection', e);
   }
 }
 

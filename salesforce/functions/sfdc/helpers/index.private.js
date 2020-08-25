@@ -17,7 +17,7 @@ const devtools = require(devtoolsPath);
 /*
  * Load Custom Twilio Helper Methods
  */
-const twilioServerlessEnvPath = functions['sfdc/helpers/twilio/serverless/variable/index'].path;
-const twilioServerlessEnv = require(twilioServerlessEnvPath);
+const twilioPath = functions['sfdc/helpers/twilio/index'].path;
+const twilio = require(twilioPath);
 
-module.exports = {sfdc, devtools, twilioServerlessEnv};
+module.exports = {sfdc, devtools, twilio};
