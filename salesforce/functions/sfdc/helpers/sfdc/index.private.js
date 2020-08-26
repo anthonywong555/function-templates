@@ -36,52 +36,39 @@ const ouathSFDCByUserAgent = async(serverlessContext) => {
 }
 
 /**
- * Returns the Salesforce Auth Token.
- * Side Effect: It will update the Serverless Environment Variable ,SFDC_OAUTH_RESPONSE, if the Access Token expires.
+ * This method wil check to see Salesforce Access Token is up to date 
+ * in Serverless Environment Variable.
  * @param {Object} serverlessContext 
  * @param {Object} serverlessHelper 
- * @param {Object} twilioClient 
- * @returns {String}
  */
-const getAuthToken = async(serverlessContext, serverlessHelper, twilioClient) => {
-  try {
-    
-  } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getAuthToken', e);
-  }
+const performOuathCheck = async (serverlessContext, serverlessHelper) => {
+
 }
 
 /**
- * Returns the Salesforce Instance URL.
+ * This method will return an instance of Salesforce Connection.
  * @param {Object} serverlessContext 
- * @param {Object} serverlessHelper 
- * @param {Object} twilioClient
- * @returns {String} 
+ * @param {Object} SalesforceConnectionObject
  */
-const getInstanceURL = async(serverlessContext, serverlessHelper, twilioClient) => {
+const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
+    /**
+     * Make sure Serverless Environment Variable has the lastest
+     * Salesforce Access Token and Instance Url.
+     */
+    await performOuathCheck(serverlessContext, serverlessHelper);
+    /**
+     * Grab the latest access token and instance url from Serverless Environments.
+     */
     const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
     const sfdcOauthResponse = await serverlessHelper
       .twilio
       .serverless
       .variable
       .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
-    const {instanceUrl} = sfdcOauthResponse;
-    return instanceUrl;
-  } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getInstanceUrl', e);
-  }
-}
+    
+    const {accessToken, instanceUrl} = sfdcOauthResponse;
 
-/**
- * This method will return an instance of Salesforce Connection.
- * @param {object} serverlessContext 
- * @param {object} SalesforceConnectionObject
- */
-const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClient) => {
-  try {
-    const accessToken = await getAuthToken(serverlessContext, serverlessHelper, twilioClient);
-    const instanceUrl = await getInstanceURL(serverlessContext, serverlessHelper, twilioClient);
     const sfdcConn = new jsforce.Connection({
       accessToken,
       instanceUrl
