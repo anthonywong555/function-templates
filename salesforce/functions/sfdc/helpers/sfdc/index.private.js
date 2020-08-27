@@ -32,9 +32,13 @@ const ouathSFDCByUserAgent = async(serverlessContext) => {
       serverlessContext.SFDC_USERNAME, 
       serverlessContext.SFDC_PASSWORD + serverlessContext.SFDC_SECURITY_TOKEN
     );
-    return conn;
+    const result = {
+      'accessToken': conn.accessToken,
+      'instanceUrl': conn.instanceUrl
+    };
+    return result;
   } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'ouathSFDCByUserAgent', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/ouathSFDCByUserAgent', e);
   }
 }
 
@@ -59,10 +63,10 @@ const performOuathCheck = async (serverlessContext, serverlessHelper, twilioClie
       await twilioClient.serverless.services(TWILIO_SERVERLESS_SERVICE_SID)
       .environments(TWILIO_SERVERLESS_ENVIRONMENT_SID)
       .variables
-      .create({key: SFDC_OAUTH_RESPONSE, value: JSON.stringify(sfdcOauthResponseStringify)})
+      .create({key: SFDC_OAUTH_RESPONSE, value: sfdcOauthResponseStringify})
     }
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getSfdcConnection', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'p/sfdc/helpers/sfdc/performOuathCheck', e);
   }
 }
 
@@ -98,7 +102,7 @@ const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClien
     return sfdcConn;
     */
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getSfdcConnection', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/getSfdcConnection', e);
   }
 }
 
