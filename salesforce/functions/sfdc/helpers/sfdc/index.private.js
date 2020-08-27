@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Import Libraries
+ */
 const jsforce = require('jsforce');
 
 /**
@@ -41,8 +44,26 @@ const ouathSFDCByUserAgent = async(serverlessContext) => {
  * @param {Object} serverlessContext 
  * @param {Object} serverlessHelper 
  */
-const performOuathCheck = async (serverlessContext, serverlessHelper) => {
-
+const performOuathCheck = async (serverlessContext, serverlessHelper, twilioClient) => {
+  try {
+    const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
+    const sfdcOauthFromEnv = await serverlessHelper
+      .twilio
+      .serverless
+      .variable
+      .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
+    
+    if(!sfdcOauthFromEnv) {
+      const sfdcOauthResponse = await ouathSFDCByUserAgent(serverlessContext);
+      const sfdcOauthResponseStringify = JSON.stringify(sfdcOauthResponse);
+      await twilioClient.serverless.services(TWILIO_SERVERLESS_SERVICE_SID)
+      .environments(TWILIO_SERVERLESS_ENVIRONMENT_SID)
+      .variables
+      .create({key: SFDC_OAUTH_RESPONSE, value: JSON.stringify(sfdcOauthResponseStringify)})
+    }
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getSfdcConnection', e);
+  }
 }
 
 /**
@@ -56,10 +77,11 @@ const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClien
      * Make sure Serverless Environment Variable has the lastest
      * Salesforce Access Token and Instance Url.
      */
-    await performOuathCheck(serverlessContext, serverlessHelper);
+    await performOuathCheck(serverlessContext, serverlessHelper, twilioClient);
     /**
      * Grab the latest access token and instance url from Serverless Environments.
      */
+    /*
     const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
     const sfdcOauthResponse = await serverlessHelper
       .twilio
@@ -74,7 +96,7 @@ const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClien
       instanceUrl
     });
     return sfdcConn;
-
+    */
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'getSfdcConnection', e);
   }

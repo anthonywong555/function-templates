@@ -48,7 +48,8 @@ const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twil
   try {
     const {query} = serverlessEvent;
     const sfdcConn = await serverlessHelper.sfdc.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
-    const result = await sfdcConn.query(query);
+    //const result = await sfdcConn.query(query);
+    const result = null;
     return result;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'driver', e);
