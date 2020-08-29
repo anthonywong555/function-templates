@@ -8,7 +8,7 @@ This template allows you to make API callouts to Salesforce.
 
 2. Determine which [OAuth Authorization Flows](https://help.salesforce.com/articleView?id=remoteaccess_oauth_flows.htm&type=5) you want to use. Either [User-Agent](https://help.salesforce.com/articleView?id=remoteaccess_oauth_user_agent_flow.htm&type=5) or [Server-to-Server](https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5). I recommend using User-Agent for POC and using Server-to-Server for production use.
 
-## User-Agent
+### User-Agent
 
 0. [Create a secure Salesforce API user.](https://help.salesforce.com/articleView?id=000331470&type=1&mode=1)
 
@@ -35,7 +35,7 @@ This template allows you to make API callouts to Salesforce.
 
 7. Take a note of `Consumer Key` and `Consumer Secret`. We will need this later.
 
-## Server-to-Server
+### Server-to-Server
 
 0. [Create a Self-Signed SSL Certificate and Private Key](https://trailhead.salesforce.com/content/learn/modules/sfdx_travis_ci/sfdx_travis_ci_connected_app).
 
@@ -75,25 +75,40 @@ This template allows you to make API callouts to Salesforce.
 
 This project requires some environment variables to be set. To keep your tokens and secrets secure, make sure to not commit the `.env` file in git. When setting up the project with `twilio serverless:init ...` the Twilio CLI will create a `.gitignore` file that excludes `.env` from the version history.
 
-In your `.env` file, set the following values:
+If you are doing `User-Agent OAuth` then, in your `.env` file, set the following values:
 
-| Variable | Description | Required |
-| :------- | :---------- | :------- |
+| Variable                           	| Description                                                                                                                                                                                                                    	| Required 	|
+|------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|----------	|
+| SFDC_LOGIN_URL                     	| [Your Salesforce Login URL.](https://help.salesforce.com/articleView?id=domain_name_overview.htm&type=5)                                                                                                                       	| true     	|
+| SFDC_CONNECTED_APP_CONSUMER_KEY    	| [Your connected app's consumer key.](https://help.salesforce.com/articleView?id=remoteaccess_terminology.htm&type=5)                                                                                                           	| true     	|
+| SFDC_CONNECTED_APP_CONSUMER_SECRET 	| [Your connected app's consumer secret.](https://help.salesforce.com/articleView?id=remoteaccess_terminology.htm&type=5)                                                                                                        	| true     	|
+| SFDC_CONNECTED_APP_CALLBACK_URL    	| [Your connected app's callback url.](https://help.salesforce.com/articleView?id=remoteaccess_terminology.htm&type=5)                                                                                                           	| true     	|
+| SFDC_IS_OAUTH_USER_AGENT_FLOW      	| Do you want Twilio to use `OAuth 2.0 User-Agent Flow` into Salesforce.                                                                                                                                                         	| true     	|
+| SFDC_USERNAME                      	| [Your dedicated integration user's username.](https://admin.salesforce.com/blog/2018/the-value-of-having-a-dedicated-salesforce-integration-user#:~:text=An%20Integration%20User%20can%20be,your%20own%20custom%20API%20work.) 	| true     	|
+| SFDC_PASSWORD                      	| [Your dedicated integration user's password.](https://admin.salesforce.com/blog/2018/the-value-of-having-a-dedicated-salesforce-integration-user#:~:text=An%20Integration%20User%20can%20be,your%20own%20custom%20API%20work.) 	| true     	|
+| SFDC_SECURITY_TOKEN                	| [Your dedicated integration user's security token.](https://help.salesforce.com/articleView?id=user_security_token.htm&type=5)                                                                                                 	| true     	|
 
+If you are doing `Server-to-Server OAuth` then, in your `.env` file, set the following values:
+
+| Variable                        	| Description                                                                                                                                                                                                                    	| Required 	|
+|---------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|----------	|
+| SFDC_LOGIN_URL                  	| [Your Salesforce Login URL.](https://help.salesforce.com/articleView?id=domain_name_overview.htm&type=5)                                                                                                                       	| true     	|
+| SFDC_CONNECTED_APP_CONSUMER_KEY 	| [Your connected app's consumer key.](https://help.salesforce.com/articleView?id=remoteaccess_terminology.htm&type=5)                                                                                                           	| true     	|
+| SFDC_IS_OAUTH_USER_AGENT_FLOW   	| Do you want Twilio to use `OAuth 2.0 User-Agent Flow` into Salesforce.                                                                                                                                                         	| true     	|
+| SFDC_USERNAME                   	| [Your dedicated integration user's username.](https://admin.salesforce.com/blog/2018/the-value-of-having-a-dedicated-salesforce-integration-user#:~:text=An%20Integration%20User%20can%20be,your%20own%20custom%20API%20work.) 	| true     	|
+
+In addition you will need to:
+1. Rename the `server.key` to `server.private.key`.
+2. Create a folder path assets/sfdc/keys.
+2. Drag and Drop the `server.private.key` into the assets/sfdc/keys folder.
 
 ### Function Parameters
 
-`/blank` expects the following parameters:
+`/sfdc/api/query` expects the following parameters:
 
-| Parameter | Description | Required |
-| :-------- | :---------- | :------- |
-
-
-`/hello-messaging` is protected and requires a valid Twilio signature as well as the following parameters:
-
-| Parameter | Description | Required |
-| :-------- | :---------- | :------- |
-
+| Parameter 	| Description               	| Example                	| Required 	|
+|-----------	|---------------------------	|------------------------	|----------	|
+| query     	| Salesforce SOQL Statement 	| SELECT Id FROM Account 	| true     	|
 
 ## Create a new project with the template
 
