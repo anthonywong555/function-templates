@@ -1,8 +1,39 @@
 # salesforce
 
-Use Salesforce APIs
+This template allows you to make API callouts to Salesforce.
 
 ## Pre-requisites
+
+1. Spin up a Salesforce [Trailhead Playground](https://trailhead.salesforce.com/content/learn/modules/trailhead_playground_management/create-a-trailhead-playground) or [Scratch Org](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs.htm).
+
+2. Determine which [OAuth Authorization Flows](https://help.salesforce.com/articleView?id=remoteaccess_oauth_flows.htm&type=5) you want to use. Either [User-Agent](https://help.salesforce.com/articleView?id=remoteaccess_oauth_user_agent_flow.htm&type=5) or [Server-to-Server](https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5). I recommend User-Agent to test and for production Server-to-Server.
+
+## User-Agent
+
+1. Setup > Quick Find > App Manager.
+
+2. Click New Connected App.
+
+3. Fill in the following information.
+
+| KEY                   	| VALUE                                                                                                                   	|
+|-----------------------	|-------------------------------------------------------------------------------------------------------------------------	|
+| Connected App Name    	| Twilio Function                                                                                                         	|
+| API Name              	| Twilio_Function                                                                                                         	|
+| Contact Email         	| YOUR_EMAIL                                                                                                              	|
+| Enable OAuth Settings 	| true                                                                                                                    	|
+| Callback URL          	| https://www.twilio.com/                                                                                                 	|
+| Selected OAuth Scopes 	| - Access and manage your data (api) <br > - Perform requests on your behalf at any time (refresh_token, offline_access) 	|
+
+## Server-to-Server
+
+1. Setup > Quick Find > App Manager.
+
+2. Click New Connect App.
+
+3. Fill in the following information.
+
+
 
 ### Environment variables
 
