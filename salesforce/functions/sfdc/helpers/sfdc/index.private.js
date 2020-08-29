@@ -42,13 +42,21 @@ const ouathSFDCByUserAgent = async(serverlessContext) => {
   }
 }
 
+const ouathSFDCByUserAgentRefresh = (serverlessContext, serverlessHelper) => {
+  try {
+
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/ouathSFDCByUserAgentRefresh', e);
+  }
+}
+
 /**
- * This method wil check to see Salesforce Access Token is up to date 
- * in Serverless Environment Variable.
+ * Check to see if Salesforce Oauth Information is in serverless variables.
  * @param {Object} serverlessContext 
  * @param {Object} serverlessHelper 
+ * @param {Object} twilioClient 
  */
-const performOuathCheck = async (serverlessContext, serverlessHelper, twilioClient) => {
+const performServerlessCheck = async (serverlessContext, serverlessHelper, twilioClient) => {
   try {
     const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
     const sfdcOauthFromEnv = await serverlessHelper
@@ -66,7 +74,21 @@ const performOuathCheck = async (serverlessContext, serverlessHelper, twilioClie
       .create({key: SFDC_OAUTH_RESPONSE, value: sfdcOauthResponseStringify})
     }
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'p/sfdc/helpers/sfdc/performOuathCheck', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/performOuathCheck', e);
+  }
+};
+
+/**
+ * This method wil check to see Salesforce Access Token is up to date 
+ * in Serverless Environment Variable.
+ * @param {Object} serverlessContext 
+ * @param {Object} serverlessHelper 
+ */
+const performOuathCheck = async (serverlessContext, serverlessHelper, twilioClient) => {
+  try {
+    await performServerlessCheck();
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/performOuathCheck', e);
   }
 }
 
