@@ -6,15 +6,19 @@ This template allows you to make API callouts to Salesforce.
 
 1. Spin up a Salesforce [Trailhead Playground](https://trailhead.salesforce.com/content/learn/modules/trailhead_playground_management/create-a-trailhead-playground) or [Scratch Org](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs.htm).
 
-2. Determine which [OAuth Authorization Flows](https://help.salesforce.com/articleView?id=remoteaccess_oauth_flows.htm&type=5) you want to use. Either [User-Agent](https://help.salesforce.com/articleView?id=remoteaccess_oauth_user_agent_flow.htm&type=5) or [Server-to-Server](https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5). I recommend User-Agent to test and for production Server-to-Server.
+2. Determine which [OAuth Authorization Flows](https://help.salesforce.com/articleView?id=remoteaccess_oauth_flows.htm&type=5) you want to use. Either [User-Agent](https://help.salesforce.com/articleView?id=remoteaccess_oauth_user_agent_flow.htm&type=5) or [Server-to-Server](https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5). I recommend using User-Agent for POC and using Server-to-Server for production use.
 
 ## User-Agent
 
-1. Setup > Quick Find > App Manager.
+0. [Create a secure Salesforce API user.](https://help.salesforce.com/articleView?id=000331470&type=1&mode=1).
 
-2. Click New Connected App.
+1. [Obtain a Security Token.](https://help.salesforce.com/articleView?id=user_security_token.htm&type=5)
 
-3. Fill in the following information.
+2. In Salesforce Lighting: Setup > Quick Find > App Manager.
+
+3. Click New Connected App.
+
+4. Fill in the following information.
 
 | KEY                   	| VALUE                                                                                                                   	|
 |-----------------------	|-------------------------------------------------------------------------------------------------------------------------	|
@@ -27,13 +31,37 @@ This template allows you to make API callouts to Salesforce.
 
 ## Server-to-Server
 
-1. Setup > Quick Find > App Manager.
+In this step we will need to either generate a [Create a Self-Signed SSL Certificate and Private Key](https://trailhead.salesforce.com/content/learn/modules/sfdx_travis_ci/sfdx_travis_ci_connected_app) or [Generate a Self-Signed Certificate](https://help.salesforce.com/articleView?id=security_keys_creating.htm&type=5). Determine which one you to use.
+
+1. In Salesforce Lighting: Setup > Quick Find > App Manager.
 
 2. Click New Connect App.
 
 3. Fill in the following information.
 
+| KEY                    	| VALUE                                                                                                                   	|
+|------------------------	|-------------------------------------------------------------------------------------------------------------------------	|
+| Connected App Name     	| Twilio Function                                                                                                         	|
+| API Name               	| Twilio_Function                                                                                                         	|
+| Contact Email          	| YOUR_EMAIL                                                                                                              	|
+| Enable OAuth Settings  	| true                                                                                                                    	|
+| Callback URL           	| https://www.twilio.com/                                                                                                 	|
+| Use digital signatures 	| true                                                                                                                    	|
+| Selected OAuth Scopes  	| - Access and manage your data (api) <br > - Perform requests on your behalf at any time (refresh_token, offline_access) 	|
 
+Upload the `server.cert` file;
+
+4. Click Save.
+
+5. Click Manage.
+
+6. Edit Policis.
+
+7. In the OAuth policies section, for Permitted Users select Admin approved users are pre-authorized, then click OK.
+
+8. Click Save.
+
+9. Create a Permission Set and assign pre-authorized users for this connected app.
 
 ### Environment variables
 
@@ -93,3 +121,21 @@ With the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart):
 ```
 twilio serverless:deploy
 ```
+
+## References
+
+Here are some helpful references that talks about Salesforce OAuth 2.0
+
+Node Modules:
+- [jsforce](https://jsforce.github.io/)
+- [salesforce-jwt-promise](https://github.com/ChuckJonas/salesforce-jwt-promise)
+- [salesforce-jwt-bearer-token-flow](https://www.npmjs.com/package/salesforce-jwt-bearer-token-flow)
+- [jsforce with jwt](https://gist.github.com/jeffdonthemic/de5432f3e308882484f2acea68ebfabd)
+
+Guides:
+- [Create Your Connected App](https://trailhead.salesforce.com/content/learn/modules/sfdx_travis_ci/sfdx_travis_ci_connected_app)
+- [Create a OAuth JWT Bearer Token flow connected app (4.x)](https://www.drupal.org/docs/8/modules/salesforce-suite/create-a-oauth-jwt-bearer-token-flow-connected-app-4x)
+- [Salesforce OAuth 2.0 JWT Bearer Token Flow Walk-Through](https://gist.github.com/booleangate/30d345ecf0617db0ea19c54c7a44d06f)
+- [How to connect to Salesforce using OAuth JWT Flow](https://help.talend.com/reader/4cgA8~D~pdi5biHRfSvg_Q/ZoXS~zBdrcuQAx427Yv6Gw)
+- [Salesforce OAuth 2.0 JWT Bearer flow](https://mannharleen.github.io/2020-03-03-salesforce-jwt/)
+- [Authorize an Org Using the JWT-Based Flow](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_jwt_flow.htm#sfdx_dev_auth_jwt_flow)
