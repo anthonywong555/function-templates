@@ -31,7 +31,7 @@ This template allows you to make API callouts to Salesforce.
 
 ## Server-to-Server
 
-In this step we will need to either generate a [Create a Self-Signed SSL Certificate and Private Key](https://trailhead.salesforce.com/content/learn/modules/sfdx_travis_ci/sfdx_travis_ci_connected_app) or [Generate a Self-Signed Certificate](https://help.salesforce.com/articleView?id=security_keys_creating.htm&type=5). Determine which one you to use.
+0. [Create a Self-Signed SSL Certificate and Private Key](https://trailhead.salesforce.com/content/learn/modules/sfdx_travis_ci/sfdx_travis_ci_connected_app).
 
 1. In Salesforce Lighting: Setup > Quick Find > App Manager.
 
@@ -49,19 +49,19 @@ In this step we will need to either generate a [Create a Self-Signed SSL Certifi
 | Use digital signatures 	| true                                                                                                                    	|
 | Selected OAuth Scopes  	| - Access and manage your data (api) <br > - Perform requests on your behalf at any time (refresh_token, offline_access) 	|
 
-Upload the `server.cert` file;
+4. Upload the `server.crt` file.
 
-4. Click Save.
+5. Click Save.
 
-5. Click Manage.
+6. Click Manage.
 
-6. Edit Policis.
+7. Edit Policis.
 
-7. In the OAuth policies section, for Permitted Users select Admin approved users are pre-authorized, then click OK.
+8. In the OAuth policies section, for Permitted Users select Admin approved users are pre-authorized, then click OK.
 
-8. Click Save.
+9. Click Save.
 
-9. Create a Permission Set and assign pre-authorized users for this connected app.
+10. Create a Permission Set and assign pre-authorized users for this connected app.
 
 ### Environment variables
 
