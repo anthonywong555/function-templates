@@ -13,7 +13,7 @@ const fs = require('fs');
 /**
  * SERVERLESS FILE BOLIER PLATE
  */
-const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/connection/index';
+const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/oauth/index';
 
 /**
  * Oauth 2.0 User - Agent
@@ -42,7 +42,7 @@ const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
     };
     return result;
   } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/oauth/index/ouathSFDCByUserAgent', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'ouathSFDCByUserAgent', e);
   }
 }
 
@@ -59,7 +59,7 @@ const getSFDCPrivateKey = (serverlessContext, serverlessHelper) => {
     const SFDCPrivateKey = fs.readFileSync(SFDCPrivateKeySystemPath, 'utf-8');
     return SFDCPrivateKey;
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/oauth/index/getSFDCPrivateKey', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSFDCPrivateKey', e);
   }
 }
 
@@ -80,7 +80,7 @@ const generateJWTToken = async(serverlessContext, serverlessHelper, privateKey) 
     });
     return jwtResponse;
   } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/oauth/index/getJWTToken', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'generateJWTToken', e);
   }
 }
 
@@ -90,7 +90,7 @@ const ouathSFDCByServerToServer = async(serverlessContext, serverlessHelper) => 
     const jwtResponse = await generateJWTToken(serverlessContext, serverlessHelper, privateKey);
     return jwtResponse;
   } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/oauth/index', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'ouathSFDCByServerToServer', e);
   }
 }
 

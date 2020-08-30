@@ -106,7 +106,7 @@ const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClien
     });
     return sfdcConn;
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/connection/index/getSfdcConnection', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSfdcConnection', e);
   }
 }
 
