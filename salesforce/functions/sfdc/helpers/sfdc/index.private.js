@@ -11,7 +11,7 @@ const connection = require(connectionPath);
 /*
  * Load Ouath Helper Methods
  */
-const oauthPath = functions['sfdc/helpers/oauth/index'].path;
+const oauthPath = functions['sfdc/helpers/sfdc/oauth/index'].path;
 const oauth = require(oauthPath);
 
 module.exports = {connection, oauth};

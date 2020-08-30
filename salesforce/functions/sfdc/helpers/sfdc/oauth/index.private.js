@@ -11,6 +11,11 @@ const {getJWTToken} = require('salesforce-jwt-promise');
 const fs = require('fs');
 
 /**
+ * SERVERLESS FILE BOLIER PLATE
+ */
+const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/connection/index';
+
+/**
  * Oauth 2.0 User - Agent
  * @param {Object} serverlessContext 
  * @param {Object} serverlessHelper
@@ -43,13 +48,15 @@ const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
 
 /**
  * Load SFDC Private Key from Twilio Assets.
- * @returns {String}
+ * @param {Object} serverlessContext 
+ * @param {Object} serverlessHelper 
+ * @returns {Object}
  */
 const getSFDCPrivateKey = (serverlessContext, serverlessHelper) => {
   try {
-    const SFDCPrivateKeySystemPath = '/assets/sfdc/keys/private.pem';
-    const SFDCPrivateKeyPath = Runtime.getAssets()[SFDCPrivateKeySystemPath].path;
-    const SFDCPrivateKey = fs.readFileSync(SFDCPrivateKeyPath, 'utf-8');
+    const {SFDC_PRIVATE_KEY_PATH} = serverlessContext;
+    const SFDCPrivateKeySystemPath = Runtime.getAssets()[SFDC_PRIVATE_KEY_PATH].path;
+    const SFDCPrivateKey = fs.readFileSync(SFDCPrivateKeySystemPath, 'utf-8');
     return SFDCPrivateKey;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, '/sfdc/helpers/sfdc/oauth/index/getSFDCPrivateKey', e);
