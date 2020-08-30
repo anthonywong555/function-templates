@@ -1,6 +1,11 @@
 'use strict'
 
 /**
+ * Load Modules
+ */
+const jsforce = require('jsforce');
+
+/**
  * This will be the key for serverless environment variable that will hold
  * Salesforce oauth response.
  */
@@ -23,7 +28,6 @@ const performServerlessCheck = async (serverlessContext, serverlessHelper, twili
     
     // Check to see if access token and instance url are in Serverless Env.
     if(!sfdcOauthFromEnv) {
-      // Oauth
       const {SFDC_IS_OAUTH_USER_AGENT_FLOW} = serverlessContext;
       let sfdcOauthResponse;
 
@@ -87,9 +91,7 @@ const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClien
       .variable
       .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
     
-    const {accessToken, instanceUrl} = sfdcOauthResponse;
-    const jsforce = require('jsforce');
-    
+    const {accessToken, instanceUrl} = sfdcOauthResponse;  
     const sfdcConn = new jsforce.Connection({
       accessToken,
       instanceUrl

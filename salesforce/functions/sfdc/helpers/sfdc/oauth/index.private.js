@@ -1,6 +1,16 @@
 'use strict';
 
 /**
+ * Load Modules
+ */
+
+const jsforce = require('jsforce');
+
+const {getJWTToken} = require('salesforce-jwt-promise');
+
+const fs = require('fs');
+
+/**
  * Oauth 2.0 User - Agent
  * @param {Object} serverlessContext 
  * @param {Object} serverlessHelper
@@ -8,7 +18,6 @@
  */
 const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
   try {
-    const jsforce = require('jsforce');
     const conn = new jsforce.Connection({
       oauth2 : {
         loginUrl : serverlessContext.SFDC_LOGIN_URL,
@@ -38,7 +47,6 @@ const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
  */
 const getSFDCPrivateKey = (serverlessContext, serverlessHelper) => {
   try {
-    const fs = require('fs');
     const SFDCPrivateKeySystemPath = '/assets/sfdc/keys/private.pem';
     const SFDCPrivateKeyPath = Runtime.getAssets()[SFDCPrivateKeySystemPath].path;
     const SFDCPrivateKey = fs.readFileSync(SFDCPrivateKeyPath, 'utf-8');
@@ -56,7 +64,6 @@ const getSFDCPrivateKey = (serverlessContext, serverlessHelper) => {
  */
 const generateJWTToken = async(serverlessContext, serverlessHelper, privateKey) => {
   try {
-    const {getJWTToken} = require('salesforce-jwt-promise');
     const {SFDC_CONNECTED_APP_CONSUMER_KEY, SFDC_USERNAME, SFDC_LOGIN_URL} = serverlessContext;
     const jwtResponse = await getJWTToken({
       clientId: SFDC_CONNECTED_APP_CONSUMER_KEY,
