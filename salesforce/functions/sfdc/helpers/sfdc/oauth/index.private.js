@@ -65,7 +65,8 @@ const getSFDCPrivateKey = (serverlessContext, serverlessHelper) => {
 
 /**
  * Generate a JWT Token
- * @param {Object} serverlessContext 
+ * @param {Object} serverlessContext
+ * @param {Object} serverlessHelper 
  * @param {String} privateKey 
  * @returns {Object}
  */
@@ -84,11 +85,21 @@ const generateJWTToken = async(serverlessContext, serverlessHelper, privateKey) 
   }
 }
 
+/**
+ * Oauth 2.0 Server to Server
+ * @param {Object} serverlessContext 
+ * @param {Object} serverlessHelper
+ * @returns {Object} 
+ */
 const ouathSFDCByServerToServer = async(serverlessContext, serverlessHelper) => {
   try {
     const privateKey = getSFDCPrivateKey(serverlessContext, serverlessHelper);
     const jwtResponse = await generateJWTToken(serverlessContext, serverlessHelper, privateKey);
-    return jwtResponse;
+    const result = {
+      accessToken: jwtResponse.access_token,
+      instanceUrl: jwtResponse.instance_url
+    };
+    return result;
   } catch(e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'ouathSFDCByServerToServer', e);
   }
