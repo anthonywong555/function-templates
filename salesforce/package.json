@@ -2,6 +2,7 @@
   "name": "salesforce",
   "dependencies": {
     "jsforce": "^1.9.3",
+    "salesforce-jwt-promise": "^0.1.8",
     "twilio": "^3.49.0"
   }
 }
