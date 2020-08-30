@@ -4,6 +4,8 @@
  * This function allow user to make SOQL against Salesforce
  */
 
+const SERVERLESS_FILE_PATH = '/sfdc/search/search';
+ 
 /**
  * Twilio calls this method
  * @param {Object} context 
@@ -46,11 +48,11 @@ const loadServerlessModules = () => {
  */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
-    const {query} = serverlessEvent;
+    const {search} = serverlessEvent;
     const sfdcConn = await serverlessHelper.sfdc.connection.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
-    const result = await sfdcConn.query(query);
+    const result = await sfdcConn.query(search);
     return result;
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, 'driver', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);
   }
 }
