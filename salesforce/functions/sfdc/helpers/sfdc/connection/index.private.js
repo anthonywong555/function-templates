@@ -1,7 +1,4 @@
-/**
- * Import Libraries
- */
-const jsforce = require('jsforce');
+'use strict'
 
 /**
  * This will be the key for serverless environment variable that will hold
@@ -91,7 +88,8 @@ const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClien
       .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
     
     const {accessToken, instanceUrl} = sfdcOauthResponse;
-
+    const jsforce = require('jsforce');
+    
     const sfdcConn = new jsforce.Connection({
       accessToken,
       instanceUrl
