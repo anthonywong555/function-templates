@@ -16,12 +16,12 @@ const fs = require('fs');
 const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/oauth/index';
 
 /**
- * Oauth 2.0 User - Agent
+ * Oauth 2.0 User - Password
  * @param {Object} serverlessContext 
  * @param {Object} serverlessHelper
  * @returns {Object} 
  */
-const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
+const ouathSFDCByUserPassword = async(serverlessContext, serverlessHelper) => {
   try {
     const conn = new jsforce.Connection({
       oauth2 : {
@@ -42,7 +42,7 @@ const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
     };
     return result;
   } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'ouathSFDCByUserAgent', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'ouathSFDCByUserPassword', e);
   }
 }
 
@@ -106,4 +106,4 @@ const ouathSFDCByServerToServer = async(serverlessContext, serverlessHelper) => 
 }
 
 
-module.exports = {ouathSFDCByUserAgent, ouathSFDCByServerToServer};
+module.exports = {ouathSFDCByUserPassword, ouathSFDCByServerToServer};

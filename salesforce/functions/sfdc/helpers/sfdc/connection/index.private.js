@@ -5,8 +5,6 @@
  */
 const jsforce = require('jsforce');
 
-const moment = require('moment');
-
 /**
  * This will be the key for serverless environment variable that will hold
  * Salesforce oauth response.
@@ -24,8 +22,8 @@ const getSFDCOauthResponse = async(serverlessContext, serverlessHelper) => {
     let sfdcOauthResponse;
 
     if(SFDC_IS_OAUTH_USER_AGENT_FLOW === 'true') {
-      // OAuth 2.0 User-Agent Flow
-      sfdcOauthResponse = await serverlessHelper.sfdc.oauth.ouathSFDCByUserAgent(serverlessContext, serverlessHelper);
+      // OAuth 2.0 User-Password Flow
+      sfdcOauthResponse = await serverlessHelper.sfdc.oauth.ouathSFDCByUserPassword(serverlessContext, serverlessHelper);
     } else {
       // OAuth 2.0 JWT Bearer Flow for Server-to-Server
       sfdcOauthResponse = await serverlessHelper.sfdc.oauth.ouathSFDCByServerToServer(serverlessContext, serverlessHelper);
@@ -36,62 +34,27 @@ const getSFDCOauthResponse = async(serverlessContext, serverlessHelper) => {
   }
 }
 
-/**
- * Check to see if Salesforce Oauth Information is in serverless variables.
- * @param {Object} serverlessContext 
- * @param {Object} serverlessHelper 
- * @param {Object} twilioClient 
- */
-const saveSFDCOauthInSerEnv = async (serverlessContext, serverlessHelper, twilioClient) => {
+const upsertSFDCOauthResponseInCache = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
     const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
+    const sfdcOauthFromEnv = await serverlessHelper
+      .twilio
+      .serverless
+      .variable
+      .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
+    
+    let envSid = sfdcOauthFromEnv ? sfdcOauthFromEnv.sid : null;
+
     const sfdcOauthResponse = await getSFDCOauthResponse(serverlessContext, serverlessHelper);
     const sfdcOauthResponseStringify = JSON.stringify(sfdcOauthResponse);
-    await twilioClient.serverless.services(TWILIO_SERVERLESS_SERVICE_SID)
-      .environments(TWILIO_SERVERLESS_ENVIRONMENT_SID)
-      .variables
-      .create({key: SFDC_OAUTH_RESPONSE, value: sfdcOauthResponseStringify});
-
+    await serverlessHelper
+      .twilio
+      .serverless
+      .variable
+      .upsert(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, envSid, SFDC_OAUTH_RESPONSE, sfdcOauthResponseStringify);
     return sfdcOauthResponse;
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'saveSFDCOauthInSerEnv', e);
-  }
-};
-
-/**
- * Check to see if Twilio Serverless has to latest Access Token.
- * If not it will update the Access Token.
- * @param {Object} serverlessContext 
- * @param {Object} serverlessHelper 
- * @param {Object} twilioClient 
- */
-const performExpirationCheck = async (serverlessContext, serverlessHelper, twilioClient, sfdcOauthFromEnv) => {
-  try {
-    const {dateUpdated} = sfdcOauthFromEnv; 
-    const oldDateTime = moment(dateUpdated);
-    const currDateTime = moment(new Date());
-
-    const duration = moment.duration(currDateTime.diff(oldDateTime));
-    const mins = duration.asMinutes();
-    const {SFDC_ACCESS_TOKEN_EXPIRES_IN_MINS} = serverlessContext;
-    
-    let result = JSON.parse(sfdcOauthFromEnv.value);
-
-    if(mins >= SFDC_ACCESS_TOKEN_EXPIRES_IN_MINS) {
-      // Refresh a Token
-      const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
-      const sfdcOauthResponse = await getSFDCOauthResponse(serverlessContext, serverlessHelper);
-      const sfdcOauthResponseStringify = JSON.stringify(sfdcOauthResponse);
-      await twilioClient.serverless.services(TWILIO_SERVERLESS_SERVICE_SID)
-        .environments(TWILIO_SERVERLESS_ENVIRONMENT_SID)
-        .variables(sfdcOauthFromEnv.sid)
-        .update({value: sfdcOauthResponseStringify});
-      result = sfdcOauthResponse;
-    }
-
-    return result;
-  } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'performExpirationCheck', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'upsertSFDCOauthResponseInCache', e);
   }
 }
 
@@ -112,12 +75,10 @@ const getSFDCOauthResponseFromCache = async (serverlessContext, serverlessHelper
     
     let sfdcOauthResponse = null;
 
-    if(sfdcOauthFromEnv) {
-      // Check to see if those information is update to date
-      sfdcOauthResponse = await performExpirationCheck(serverlessContext, serverlessHelper, twilioClient, sfdcOauthFromEnv);
+    if(sfdcOauthFromEnv && sfdcOauthFromEnv.value) {
+      sfdcOauthResponse = JSON.parse(sfdcOauthFromEnv.value);
     } else {
-      // Check to see if Salesforce Access Token, Instance URL and etc is in Serverless Env
-      sfdcOauthResponse = await saveSFDCOauthInSerEnv(serverlessContext, serverlessHelper, twilioClient);
+      sfdcOauthResponse = await upsertSFDCOauthResponseInCache(serverlessContext, serverlessHelper, twilioClient);
     }
 
     return sfdcOauthResponse;
@@ -145,4 +106,18 @@ const getSfdcConnection = async (serverlessContext, serverlessHelper, twilioClie
   }
 }
 
-module.exports = {getSfdcConnection};
+const getNewSfdcConnection = async (serverlessContext, serverlessHelper, twilioClient) => {
+  try {
+    const sfdcOauthResponse = await upsertSFDCOauthResponseInCache(serverlessContext, serverlessHelper);
+    const {accessToken, instanceUrl} = sfdcOauthResponse;  
+    const sfdcConn = new jsforce.Connection({
+      accessToken,
+      instanceUrl
+    });
+    return sfdcConn;
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getNewSfdcConnection', e);
+  }
+}
+
+module.exports = {getSfdcConnection, getNewSfdcConnection};
