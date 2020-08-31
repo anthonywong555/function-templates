@@ -105,5 +105,23 @@ const ouathSFDCByServerToServer = async(serverlessContext, serverlessHelper) => 
   }
 }
 
+const OAuthToSFDC = async(serverlessContext, serverlessHelper) => {
+  try {
+    const {SFDC_IS_OAUTH_USER_AGENT_FLOW} = serverlessContext;
+    let sfdcOauthResponse;
 
-module.exports = {ouathSFDCByUserPassword, ouathSFDCByServerToServer};
+    if(SFDC_IS_OAUTH_USER_AGENT_FLOW === 'true') {
+      // OAuth 2.0 User-Password Flow
+      sfdcOauthResponse = await ouathSFDCByUserPassword(serverlessContext, serverlessHelper);
+    } else {
+      // OAuth 2.0 JWT Bearer Flow for Server-to-Server
+      sfdcOauthResponse = await ouathSFDCByServerToServer(serverlessContext, serverlessHelper);
+    }
+    return sfdcOauthResponse;
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSFDCOauthResponse', e);
+  }
+}
+
+
+module.exports = {OAuthToSFDC};

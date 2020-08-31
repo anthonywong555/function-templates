@@ -16,24 +16,6 @@ const SFDC_OAUTH_RESPONSE = 'SFDC_OAUTH_RESPONSE';
  */
 const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/connection/index';
 
-const getSFDCOauthResponse = async(serverlessContext, serverlessHelper) => {
-  try {
-    const {SFDC_IS_OAUTH_USER_AGENT_FLOW} = serverlessContext;
-    let sfdcOauthResponse;
-
-    if(SFDC_IS_OAUTH_USER_AGENT_FLOW === 'true') {
-      // OAuth 2.0 User-Password Flow
-      sfdcOauthResponse = await serverlessHelper.sfdc.oauth.ouathSFDCByUserPassword(serverlessContext, serverlessHelper);
-    } else {
-      // OAuth 2.0 JWT Bearer Flow for Server-to-Server
-      sfdcOauthResponse = await serverlessHelper.sfdc.oauth.ouathSFDCByServerToServer(serverlessContext, serverlessHelper);
-    }
-    return sfdcOauthResponse;
-  } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSFDCOauthResponse', e);
-  }
-}
-
 const upsertSFDCOauthResponseInCache = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
     const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
@@ -45,7 +27,7 @@ const upsertSFDCOauthResponseInCache = async(serverlessContext, serverlessHelper
     
     let envSid = sfdcOauthFromEnv ? sfdcOauthFromEnv.sid : null;
 
-    const sfdcOauthResponse = await getSFDCOauthResponse(serverlessContext, serverlessHelper);
+    const sfdcOauthResponse = await serverlessHelper.sfdc.oauth.OAuthToSFDC(serverlessContext, serverlessHelper);
     const sfdcOauthResponseStringify = JSON.stringify(sfdcOauthResponse);
     await serverlessHelper
       .twilio
@@ -56,6 +38,16 @@ const upsertSFDCOauthResponseInCache = async(serverlessContext, serverlessHelper
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'upsertSFDCOauthResponseInCache', e);
   }
+}
+
+const canJSONParse = (jsonString) => {
+  let result = true;
+  try {
+    JSON.parse(jsonString);
+  } catch (e) {
+    result = false;
+  }
+  return result;
 }
 
 /**
@@ -75,7 +67,7 @@ const getSFDCOauthResponseFromCache = async (serverlessContext, serverlessHelper
     
     let sfdcOauthResponse = null;
 
-    if(sfdcOauthFromEnv && sfdcOauthFromEnv.value) {
+    if(sfdcOauthFromEnv && sfdcOauthFromEnv.value && canJSONParse(sfdcOauthFromEnv.value)) {
       sfdcOauthResponse = JSON.parse(sfdcOauthFromEnv.value);
     } else {
       sfdcOauthResponse = await upsertSFDCOauthResponseInCache(serverlessContext, serverlessHelper, twilioClient);
@@ -94,30 +86,37 @@ const getSFDCOauthResponseFromCache = async (serverlessContext, serverlessHelper
  */
 const getSfdcConnection = async (serverlessContext, serverlessHelper, twilioClient) => {
   try {
-    const sfdcOauthResponse = await getSFDCOauthResponseFromCache(serverlessContext, serverlessHelper, twilioClient);
-    const {accessToken, instanceUrl} = sfdcOauthResponse;  
+    let sfdcOauthResponse = await getSFDCOauthResponseFromCache(serverlessContext, serverlessHelper, twilioClient);
+
+    if(!isValidSfdcOauthResponse(sfdcOauthResponse)) {
+      sfdcOauthResponse = upsertSFDCOauthResponseInCache(serverlessContext, serverlessHelper, twilioClient);
+    }
+
+    const {accessToken, instanceUrl} = sfdcOauthResponse;
     const sfdcConn = new jsforce.Connection({
       accessToken,
       instanceUrl
     });
+
     return sfdcConn;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSfdcConnection', e);
   }
 }
 
-const getNewSfdcConnection = async (serverlessContext, serverlessHelper, twilioClient) => {
+const isValidSfdcOauthResponse = async (sfdcOauthResponse) => {
+  let result = true;
   try {
-    const sfdcOauthResponse = await upsertSFDCOauthResponseInCache(serverlessContext, serverlessHelper);
-    const {accessToken, instanceUrl} = sfdcOauthResponse;  
+    const {accessToken, instanceUrl} = sfdcOauthResponse;
     const sfdcConn = new jsforce.Connection({
       accessToken,
       instanceUrl
     });
-    return sfdcConn;
+    const identity = await sfdcConn.identity();
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getNewSfdcConnection', e);
+    result = false;
   }
+  return result;
 }
 
-module.exports = {getSfdcConnection, getNewSfdcConnection};
+module.exports = {getSfdcConnection};
