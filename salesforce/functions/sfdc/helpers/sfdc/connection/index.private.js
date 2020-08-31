@@ -65,7 +65,7 @@ const saveSFDCOauthInSerEnv = async (serverlessContext, serverlessHelper, twilio
  * @param {Object} serverlessHelper 
  * @param {Object} twilioClient 
  */
-const performExpirationCheck = (serverlessContext, serverlessHelper, twilioClient, sfdcOauthFromEnv) => {
+const performExpirationCheck = async (serverlessContext, serverlessHelper, twilioClient, sfdcOauthFromEnv) => {
   try {
     const {dateUpdated} = sfdcOauthFromEnv; 
     const oldDateTime = moment(dateUpdated);
@@ -75,7 +75,7 @@ const performExpirationCheck = (serverlessContext, serverlessHelper, twilioClien
     const mins = duration.asMinutes();
     const {SFDC_ACCESS_TOKEN_EXPIRES_IN_MINS} = serverlessContext;
     
-    let result = sfdcOauthFromEnv;
+    let result = JSON.parse(sfdcOauthFromEnv.value);
 
     if(mins >= SFDC_ACCESS_TOKEN_EXPIRES_IN_MINS) {
       // Refresh a Token
@@ -131,9 +131,9 @@ const getSFDCOauthResponseFromCache = async (serverlessContext, serverlessHelper
  * @param {Object} serverlessContext 
  * @param {Object} SalesforceConnectionObject
  */
-const getSfdcConnection = async(serverlessContext, serverlessHelper, twilioClient) => {
+const getSfdcConnection = async (serverlessContext, serverlessHelper, twilioClient) => {
   try {
-    const sfdcOauthResponse = await getSFDCOauthResponseFromCache();
+    const sfdcOauthResponse = await getSFDCOauthResponseFromCache(serverlessContext, serverlessHelper, twilioClient);
     const {accessToken, instanceUrl} = sfdcOauthResponse;  
     const sfdcConn = new jsforce.Connection({
       accessToken,
