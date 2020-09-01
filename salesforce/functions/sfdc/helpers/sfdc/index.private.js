@@ -3,10 +3,10 @@
 const functions = Runtime.getFunctions();
 
 /*
- * Load Connection Helper Methods
+ * Load Cache Helper Methods
  */
-const connectionPath = functions['sfdc/helpers/sfdc/connection/index'].path;
-const connection = require(connectionPath);
+const cachePath = functions['sfdc/helpers/sfdc/cache/index'].path;
+const cache = require(cachePath);
 
 /*
  * Load Ouath Helper Methods
@@ -14,4 +14,4 @@ const connection = require(connectionPath);
 const oauthPath = functions['sfdc/helpers/sfdc/oauth/index'].path;
 const oauth = require(oauthPath);
 
-module.exports = {connection, oauth};
+module.exports = {cache, oauth};

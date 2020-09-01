@@ -1,6 +1,11 @@
 'use strict';
 
 /**
+ *  The maximum limit of Serverless Enviroment Variables you can get in one request.
+ */
+const FETCH_VARIABLE_LIMIT = 200;
+
+/**
  * Fetch a serverless variable by key. If not found return a null.
  * @param {Twilio Client} twilioClient 
  * @param {String} serviceSid 
@@ -14,7 +19,7 @@ const fetchByKey = async (twilioClient, serviceSid, environmentSid, key) => {
       .services(serviceSid)
       .environments(environmentSid)
       .variables
-      .list();
+      .list({limit: FETCH_VARIABLE_LIMIT});
 
     let result = null;
 
