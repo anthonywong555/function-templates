@@ -48,9 +48,19 @@ const loadServerlessModules = () => {
  */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
-    const {query} = serverlessEvent;
-    const sfdcConn = await serverlessHelper.sfdc.connection.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
-    const result = await sfdcConn.query(query);
+    const action = serverlessHelper.sfdc.action.generateAction(
+      serverlessContext, 
+      serverlessEvent, 
+      serverlessHelper,
+      serverlessHelper.sfdc.action.ACTION_QUERY
+    );
+    const sfdcConnection = await serverlessHelper.sfdc.connection.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
+    const result = await serverlessHelper.sfdc.reducer.driver(
+      serverlessContext,
+      serverlessHelper,
+      sfdcConnection,
+      action
+    );
     return result;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);

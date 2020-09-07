@@ -14,4 +14,16 @@ const cache = require(cachePath);
 const oauthPath = functions['sfdc/helpers/sfdc/oauth/index'].path;
 const oauth = require(oauthPath);
 
-module.exports = {cache, oauth};
+/*
+ * Load Action Helper Methods
+ */
+const actionPath = functions['sfdc/helpers/sfdc/action/index'].path;
+const action = require(actionPath);
+
+/*
+ * Load Reducer Helper Methods
+ */
+const reducerPath = functions['sfdc/helpers/sfdc/reducer/index'].path;
+const reducer = require(reducerPath);
+
+module.exports = {cache, oauth, action, reducer};
