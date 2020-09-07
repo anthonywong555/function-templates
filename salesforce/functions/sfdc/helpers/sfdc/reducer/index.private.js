@@ -32,21 +32,30 @@ const execute = async(serverlessHelper, sfdcConnection, action) => {
 }
 
 const driver = async(serverlessContext, serverlessHelper, sfdcConnection, action) => {
-  const NUM_RETRY = 3;
+  const SFDC_NUM_API_RETRY = parseInt(serverlessContext.SFDC_NUM_API_RETRY) ? 
+    parseInt(serverlessContext.SFDC_NUM_API_RETRY) : 
+    2;
+  
+  let isErrorThrown;
   let result;
 
-  for(let i = 0; i < NUM_RETRY; i++) {
+  for(let i = 0; i < SFDC_NUM_API_RETRY; i++) {
     try {
+      isErrorThrown = false;
       result = await execute(serverlessHelper, sfdcConnection, action);
       break;
     } catch (e) {
+      isErrorThrown = true;
+      result = e;
       const {name} = e;
       if(name === SFDC_ERROR_INVALID_SESSION_ID) {
         sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(serverlessContext, serverlessHelper, twilioClient, true);
-      } else {
-        throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);
       }
     }
+  }
+
+  if(isErrorThrown) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e); 
   }
 
   return result;
