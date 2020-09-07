@@ -123,5 +123,27 @@ const OAuthToSFDC = async(serverlessContext, serverlessHelper) => {
   }
 }
 
+const getSFDCConnection = async(serverlessContext, serverlessHelper, twilioClient, forceRefresh = false) => {
+  try {
+    let sfdcOauthResponse;
 
-module.exports = {OAuthToSFDC};
+    if(forceRefresh) {
+      sfdcOauthResponse = await updateSFDCOAuthCache(serverlessContext, serverlessHelper, twilioClient);
+    } else {
+      sfdcOauthResponse = await getSFDCOAuthFromCache(serverlessContext, serverlessHelper, twilioClient);
+    }
+    
+    const {accessToken, instanceUrl} = sfdcOauthResponse;
+    const sfdcConnection = new jsforce.Connection();
+    sfdcConnection.initialize({
+      instanceUrl,
+      accessToken
+    });
+    return sfdcConnection;
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSFDCConnection', e);
+  }
+}
+
+
+module.exports = {getSFDCConnection};
