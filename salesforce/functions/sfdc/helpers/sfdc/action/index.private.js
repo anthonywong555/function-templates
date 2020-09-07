@@ -15,6 +15,16 @@ const ACTION_SOBJECT_UPDATE = 'ACTION_SOBJECT_UPDATE';
 
 const ACTION_SOBJECT_DELETE = 'ACTION_SOBJECT_DELETE';
 
+const getJSON = (targetString) => {
+  let result;
+  try {
+    result = JSON.parse(targetString);
+  } catch (e) {
+    result = targetString;
+  }
+  return result;
+}
+
 const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, actionType) => {
   try {
     let payload = null;
@@ -28,18 +38,18 @@ const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, a
       case ACTION_SOBJECT_UPDATE:
         payload = {
           sobject: serverlessEvent.sobject,
-          records: serverlessEvent.records
+          records: getJSON(serverlessEvent.records)
         }
         break;
       case ACTION_SOBJECT_READ:
         payload = {
           sobject: serverlessEvent.sobject,
-          ids: serverlessEvent.ids
+          ids: getJSON(serverlessEvent.ids)
         };
         break;
       case ACTION_SOBJECT_DELETE:
         payload = {
-          ids: serverlessEvent.ids
+          ids: getJSON(serverlessEvent.ids)
         }
         break;
       default:
@@ -65,4 +75,4 @@ const generateAction = (serverlessContext, serverlessEvent, serverlessHelper, ac
   }
 }
 
-module.exports = {generateAction, ACTION_QUERY, ACTION_SOBJECT_CREATE};
+module.exports = {generateAction, ACTION_QUERY, ACTION_SOBJECT_CREATE, ACTION_SOBJECT_READ, ACTION_SOBJECT_UPDATE, ACTION_SOBJECT_DELETE};
