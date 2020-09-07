@@ -104,6 +104,15 @@ const getSFDCOAuthFromCache = async (serverlessContext, serverlessHelper, twilio
   }
 }
 
+/**
+ * This method will generate JSforce Connection by using 'cache' or get a new access token
+ * from Salesforce.
+ * @param {Object} serverlessContext Instance of Serverless Context
+ * @param {Object} serverlessHelper Instance of this Function Template Helpers
+ * @param {Object} twilioClient Instance of Twilio Node Module
+ * @param {Boolean} forceRefresh Should Twilio get a new access token? Default false.
+ * @returns {Object} JSforce Connection
+ */
 const getSFDCConnection = async(serverlessContext, serverlessHelper, twilioClient, forceRefresh = false) => {
   try {
     let sfdcOauthResponse;

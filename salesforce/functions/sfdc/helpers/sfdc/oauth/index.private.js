@@ -119,7 +119,7 @@ const OAuthToSFDC = async(serverlessContext, serverlessHelper) => {
     }
     return sfdcOauthResponse;
   } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSFDCOauthResponse', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'OAuthToSFDC', e);
   }
 }
 
