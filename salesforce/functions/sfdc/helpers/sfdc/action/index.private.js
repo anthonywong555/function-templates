@@ -9,6 +9,12 @@ const ACTION_QUERY = 'ACTION_QUERY';
 
 const ACTION_SOBJECT_CREATE = 'ACTION_SOBJECT_CREATE';
 
+const ACTION_SOBJECT_READ = 'ACTION_SOBJECT_READ';
+
+const ACTION_SOBJECT_UPDATE = 'ACTION_SOBJECT_UPDATE';
+
+const ACTION_SOBJECT_DELETE = 'ACTION_SOBJECT_DELETE';
+
 const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, actionType) => {
   try {
     let payload = null;
@@ -19,9 +25,21 @@ const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, a
         };
         break;
       case ACTION_SOBJECT_CREATE:
+      case ACTION_SOBJECT_UPDATE:
         payload = {
           sobject: serverlessEvent.sobject,
-          payload: serverlessEvent.payload
+          records: serverlessEvent.records
+        }
+        break;
+      case ACTION_SOBJECT_READ:
+        payload = {
+          sobject: serverlessEvent.sobject,
+          ids: serverlessEvent.ids
+        };
+        break;
+      case ACTION_SOBJECT_DELETE:
+        payload = {
+          ids: serverlessEvent.ids
         }
         break;
       default:

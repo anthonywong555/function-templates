@@ -5,31 +5,51 @@
  */
 const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/reducer/index';
 
+const SFDC_ERROR_INVALID_SESSION_ID = 'INVALID_SESSION_ID';
+
 const execute = async(serverlessHelper, sfdcConnection, action) => {
   try {
     const {type, payload} = action;
+    const {query, sobject, ids, records} = payload;
+
     switch(type) {
       case serverlessHelper.sfdc.action.ACTION_QUERY:
-        return await sfdcConnection.query(payload); 
+        return await sfdcConnection.query(query);
+      case serverlessHelper.sfdc.action.ACTION_SOBJECT_CREATE:
+        return await sfdcConnection.sobject(sobject).create(records);
+      case serverlessHelper.sfdc.action.ACTION_SOBJECT_READ:
+        return await sfdcConnection.sobject(sobject).create(ids);
+      case serverlessHelper.sfdc.action.ACTION_SOBJECT_UPDATE:
+        return await sfdcConnection.sobject(sobject).update(records);
+      case serverlessHelper.sfdc.action.ACTION_SOBJECT_UPDATE:
+        return await sfdcConnection.sobject(sobject).destroy(ids);
       default:
         return null;
     }
   } catch(e) {
-    return e;
+    throw e;
   }
 }
 
 const driver = async(serverlessContext, serverlessHelper, sfdcConnection, action) => {
-  const NUM_RETRY = 1;
+  const NUM_RETRY = 3;
+  let result;
+
   for(let i = 0; i < NUM_RETRY; i++) {
     try {
-      const result = await execute(serverlessHelper, sfdcConnection, action);
-      return result;
+      result = await execute(serverlessHelper, sfdcConnection, action);
+      break;
     } catch (e) {
-      // Check if it's unauthorize connection
-      throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);
+      const {name} = e;
+      if(name === SFDC_ERROR_INVALID_SESSION_ID) {
+        sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(serverlessContext, serverlessHelper, twilioClient, true);
+      } else {
+        throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);
+      }
     }
   }
+
+  return result;
 }
 
 module.exports = {driver};
