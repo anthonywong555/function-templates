@@ -1,11 +1,11 @@
 'use strict';
 
 /**
- * This function allow user to create Record(s) inside Salesforce
- * Reference: https://jsforce.github.io/document/#create
+ * This function allow user to read Record(s) inside Salesforce
+ * Reference: https://jsforce.github.io/document/#retrieve
  */
 
-const SERVERLESS_FILE_PATH = '/sfdc/crud/create';
+const SERVERLESS_FILE_PATH = '/sfdc/crud/delete';
  
 /**
  * Twilio calls this method
@@ -53,7 +53,7 @@ const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twil
       serverlessContext, 
       serverlessEvent, 
       serverlessHelper,
-      serverlessHelper.sfdc.action.ACTION_SOBJECT_CREATE
+      serverlessHelper.sfdc.action.ACTION_SOBJECT_READ
     );
     const sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(
       serverlessContext, 
