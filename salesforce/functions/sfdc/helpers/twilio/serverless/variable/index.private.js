@@ -3,7 +3,7 @@
 /**
  *  The maximum limit of Serverless Enviroment Variables you can get in one request.
  */
-const FETCH_VARIABLE_LIMIT = 200;
+const FETCH_VARIABLE_LIMIT = 100;
 
 /**
  * Fetch a serverless variable by key. If not found return a null.

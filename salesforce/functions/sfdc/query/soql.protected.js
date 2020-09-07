@@ -54,7 +54,12 @@ const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twil
       serverlessHelper,
       serverlessHelper.sfdc.action.ACTION_QUERY
     );
-    const sfdcConnection = await serverlessHelper.sfdc.connection.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
+    const {accessToken, instanceUrl} = await serverlessHelper.sfdc.cache.getSFDCOAuthFromCache(serverlessContext, serverlessHelper, twilioClient);
+    const sfdcConnection = new jsforce.Connection();
+    sfdcConnection.initialize({
+      instanceUrl,
+      accessToken
+    });
     const result = await serverlessHelper.sfdc.reducer.driver(
       serverlessContext,
       serverlessHelper,

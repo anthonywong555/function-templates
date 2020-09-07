@@ -85,11 +85,10 @@ const getSFDCOAuthFromCache = async (serverlessContext, serverlessHelper, twilio
       .serverless
       .variable
       .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
-    const sfdcOauthFromEnvValue = sfdcOauthFromEnv.value;
     let sfdcOauthResponse = null;
 
-    if(sfdcOauthFromEnv && sfdcOauthFromEnvValue && isValidOAuthResponse(sfdcOauthFromEnvValue)) {
-      sfdcOauthResponse = JSON.parse(sfdcOauthFromEnvValue);
+    if(sfdcOauthFromEnv && isValidOAuthResponse(sfdcOauthFromEnv.value)) {
+      sfdcOauthResponse = JSON.parse(sfdcOauthFromEnv.value);
     } else {
       sfdcOauthResponse = await updateSFDCOAuthCache(serverlessContext, serverlessHelper, twilioClient);
     }
