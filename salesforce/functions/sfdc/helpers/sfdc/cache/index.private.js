@@ -6,6 +6,11 @@
  */
 
 /**
+ * Load Modules
+ */
+const jsforce = require('jsforce');
+
+/**
  * This will be the key for serverless environment variable that will hold
  * Salesforce oauth response.
  */
@@ -99,4 +104,26 @@ const getSFDCOAuthFromCache = async (serverlessContext, serverlessHelper, twilio
   }
 }
 
-module.exports = {getSFDCOAuthFromCache, updateSFDCOAuthCache};
+const getSFDCConnection = async(serverlessContext, serverlessHelper, twilioClient, forceRefresh = false) => {
+  try {
+    let sfdcOauthResponse;
+
+    if(forceRefresh) {
+      sfdcOauthResponse = await updateSFDCOAuthCache(serverlessContext, serverlessHelper, twilioClient);
+    } else {
+      sfdcOauthResponse = await getSFDCOAuthFromCache(serverlessContext, serverlessHelper, twilioClient);
+    }
+    
+    const {accessToken, instanceUrl} = sfdcOauthResponse;
+    const sfdcConnection = new jsforce.Connection();
+    sfdcConnection.initialize({
+      instanceUrl,
+      accessToken
+    });
+    return sfdcConnection;
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'getSFDCConnection', e);
+  }
+}
+
+module.exports = {getSFDCConnection};
