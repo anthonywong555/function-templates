@@ -49,13 +49,23 @@ const loadServerlessModules = () => {
  */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
-    const {sObject} = serverlessEvent;
-    const record = 
-      typeof serverlessEvent.record === 'string' ? 
-      JSON.parse(serverlessEvent.record) : 
-      serverlessEvent.record;
-    const sfdcConn = await serverlessHelper.sfdc.connection.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
-    const result = await sfdcConn.sobject(sObject).create(record);
+    const action = serverlessHelper.sfdc.action.generateAction(
+      serverlessContext, 
+      serverlessEvent, 
+      serverlessHelper,
+      serverlessHelper.sfdc.action.ACTION_SOBJECT_CREATE
+    );
+    const sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(
+      serverlessContext, 
+      serverlessHelper, 
+      twilioClient
+    );
+    const result = await serverlessHelper.sfdc.reducer.driver(
+      serverlessContext,
+      serverlessHelper,
+      sfdcConnection,
+      action
+    );
     return result;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);
