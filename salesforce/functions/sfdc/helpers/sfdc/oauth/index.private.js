@@ -107,10 +107,10 @@ const ouathSFDCByServerToServer = async(serverlessContext, serverlessHelper) => 
 
 const OAuthToSFDC = async(serverlessContext, serverlessHelper) => {
   try {
-    const {SFDC_IS_OAUTH_USER_AGENT_FLOW} = serverlessContext;
+    const {SFDC_IS_OAUTH_USER_PASSWORD_FLOW} = serverlessContext;
     let sfdcOauthResponse;
 
-    if(SFDC_IS_OAUTH_USER_AGENT_FLOW === 'true') {
+    if(SFDC_IS_OAUTH_USER_PASSWORD_FLOW === 'true') {
       // OAuth 2.0 User-Password Flow
       sfdcOauthResponse = await ouathSFDCByUserPassword(serverlessContext, serverlessHelper);
     } else {
