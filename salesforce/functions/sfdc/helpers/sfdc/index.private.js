@@ -26,12 +26,6 @@ const oauth = require(oauthPath);
 const actionPath = functions['sfdc/helpers/sfdc/action/index'].path;
 const action = require(actionPath);
 
-/*
- * Load Reducer Helper Methods
- */
-const reducerPath = functions['sfdc/helpers/sfdc/reducer/index'].path;
-const reducer = require(reducerPath);
-
 /**
  * Load Validator Helper Methods
  */
@@ -42,7 +36,6 @@ module.exports = {
   cache,
   constants,
   oauth,
-  action, 
-  reducer,
+  action,
   validator
 };
