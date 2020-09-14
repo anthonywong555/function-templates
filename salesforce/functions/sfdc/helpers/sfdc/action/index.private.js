@@ -75,4 +75,11 @@ const generateAction = (serverlessContext, serverlessEvent, serverlessHelper, ac
   }
 }
 
-module.exports = {generateAction, ACTION_QUERY, ACTION_SOBJECT_CREATE, ACTION_SOBJECT_READ, ACTION_SOBJECT_UPDATE, ACTION_SOBJECT_DELETE};
+module.exports = {
+  generateAction, 
+  ACTION_QUERY, 
+  ACTION_SOBJECT_CREATE, 
+  ACTION_SOBJECT_READ, 
+  ACTION_SOBJECT_UPDATE, 
+  ACTION_SOBJECT_DELETE
+};
