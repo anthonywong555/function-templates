@@ -4,16 +4,14 @@ const ARRAY_OF_STRINGS_CHECKER = {
   errors: true,
   schema: false,
   validate: function validator(data) {
-    validator.errors = [];
-     validator.errors.push({
+    validator.errors = [{
       keyword: 'validateMaxPoints',
       message: 'ids field is required. It can be either string, array of strings, or a string that can be JSON.parse()',
       params: {
         keyword: 'validateMaxPoints'
       }
-    });
-    
-    console.log(`data: ${data}`);
+    }];
+
     let result = false;
     if(typeof data === 'string') {
       if(isJSON(data)) {
@@ -37,7 +35,14 @@ const ARRAY_OF_STRINGS_CHECKER = {
 
 const RECORDS_KEYWORD_CHECKER = {
   schema: false,
-  validate: (data) => {
+  validate: function validator(data) {
+    validator.errors = [{
+      keyword: 'recordKeywordChecker',
+      message: 'If the records value is a string, then it must be able to be JSON.parse()',
+      params: {
+        keyword: 'recordKeywordChecker'
+      }
+    }];
     const result = 
       (typeof data === 'string') ? 
       isJSON(data) : 
