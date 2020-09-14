@@ -110,6 +110,34 @@ In addition you will need to:
 |-----------	|---------------------------	|------------------------	|----------	|
 | query     	| Salesforce SOQL Statement 	| SELECT Id FROM Account 	| true     	|
 
+`/sfdc/api/create` expects the following parameters:
+
+| Parameter 	| Description                 	| Example                 	| Type                                           	| Required 	|
+|-----------	|-----------------------------	|-------------------------	|------------------------------------------------	|----------	|
+| sobject   	| Salesforce SObject API Name 	| Account                 	| String                                         	| true     	|
+| records   	| Record(s) to update         	| {"Name":"Test Account"} 	| JSON, Array of JSON, Stringify of JSON / Array 	| true     	|
+
+`/sfdc/api/read` expects the following parameters:
+
+| Parameter 	| Description                 	| Example              	| Type                                         	| Required 	|
+|-----------	|-----------------------------	|----------------------	|----------------------------------------------	|----------	|
+| sobject   	| Salesforce SObject API Name 	| Account              	| String                                       	| true     	|
+| ids       	| Id of Record(s) to delete   	| "0013t00001bzcoqAAA" 	| String, Array of Strings, Stringify of Array 	| true     	|
+
+`/sfdc/api/update` expects the following parameters:
+
+| Parameter 	| Description                 	| Example                 	| Type                                           	| Required 	|
+|-----------	|-----------------------------	|-------------------------	|------------------------------------------------	|----------	|
+| sobject   	| Salesforce SObject API Name 	| Account                 	| String                                         	| true     	|
+| records   	| Record(s) to update         	| {"Name":"Test Account"} 	| JSON, Array of JSON, Stringify of JSON / Array 	| true     	|
+
+`/sfdc/api/delete` expects the following parameters:
+
+| Parameter 	| Description                 	| Example              	| Type                                         	| Required 	|
+|-----------	|-----------------------------	|----------------------	|----------------------------------------------	|----------	|
+| sobject   	| Salesforce SObject API Name 	| Account              	| String                                       	| true     	|
+| ids       	| Id of Record(s) to delete   	| "0013t00001bzcoqAAA" 	| String, Array of Strings, Stringify of Array 	| true     	|
+
 ## Create a new project with the template
 
 1. Install the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart#install-twilio-cli)
