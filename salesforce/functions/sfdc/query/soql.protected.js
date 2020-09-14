@@ -48,11 +48,23 @@ const loadServerlessModules = () => {
  */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
+    const actionType = serverlessHelper.sfdc.constants.ACTION_QUERY;
+    const valid = serverlessHelper.sfdc.validator.isValidPayload(
+      serverlessContext,
+      serverlessEvent,
+      serverlessHelper,
+      actionType
+    );
+    
+    if(!valid.isValid) {
+      throw new Error(valid.errorMsg);
+    }
+
     const action = serverlessHelper.sfdc.action.generateAction(
       serverlessContext, 
       serverlessEvent, 
       serverlessHelper,
-      serverlessHelper.sfdc.action.ACTION_QUERY
+      actionType
     );
     const sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(
       serverlessContext, 

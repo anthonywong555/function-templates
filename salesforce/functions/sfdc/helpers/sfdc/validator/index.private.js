@@ -26,7 +26,7 @@ const schema = require(schemaPath);
 const loadValidator = (actionType) => {
   const ajv = new Ajv({allErrors: true, jsonPointers: true});
   require('ajv-errors')(ajv);
-  const targetSchema = schema.actionTypeToSchema[actionType];
+  const targetSchema = schema.actionTypeToSchema(actionType);
   const validator = ajv.compile(targetSchema);
   return validator;
 }
@@ -39,10 +39,10 @@ const loadValidator = (actionType) => {
  * @param {String} actionType See salesforce/helpers/sfdc/constants
  * @returns {Object} 
  */
-const isValidPayload = (serverlessContext, serverlessHelper, targetPayload, actionType) => {
+const isValidPayload = (serverlessContext, serverlessEvent, serverlessHelper, actionType) => {
   try {
     const validator = loadValidator(actionType);
-    const isValid = validator(targetPayload);
+    const isValid = validator(serverlessEvent);
     const errors = validator.errors;
     const errorMsg = errors ? 
     errors.reduce((acum, anError) => {
