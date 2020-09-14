@@ -10,23 +10,21 @@ const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/validator/index';
  */
 const Ajv = require('ajv');
 
-const functions = Runtime.getFunctions();
-
 /*
- * Load Schema Helper Methods
+ * Load Validator Helper Methods
  */
-const schemaPath = functions['sfdc/helpers/sfdc/validator/schema'].path;
-const schema = require(schemaPath);
-
+const functions = Runtime.getFunctions();
+const validatorHelpersPath = functions['sfdc/helpers/sfdc/validator/helpers/index'].path;
+const validatorHelpers = require(validatorHelpersPath);
 
 /**
  * 
  * @param {String} actionType 
  */
-const loadValidator = (actionType) => {
+const loadValidator = (serverlessContext, serverlessHelper, actionType) => {
   const ajv = new Ajv({allErrors: true, jsonPointers: true});
   require('ajv-errors')(ajv);
-  const targetSchema = schema.actionTypeToSchema(actionType);
+  const targetSchema = validatorHelpers.schema.actionTypeToSchema(serverlessContext, serverlessHelper, actionType);
   const validator = ajv.compile(targetSchema);
   return validator;
 }
@@ -41,7 +39,7 @@ const loadValidator = (actionType) => {
  */
 const isValidPayload = (serverlessContext, serverlessEvent, serverlessHelper, actionType) => {
   try {
-    const validator = loadValidator(actionType);
+    const validator = loadValidator(serverlessContext, serverlessHelper, actionType);
     const isValid = validator(serverlessEvent);
     const errors = validator.errors;
     const errorMsg = errors ? 
@@ -55,7 +53,7 @@ const isValidPayload = (serverlessContext, serverlessEvent, serverlessHelper, ac
       errorMsg
     };
     return result;
-  } catch {
+  } catch(e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'isValidPayload', e);
   }
 }

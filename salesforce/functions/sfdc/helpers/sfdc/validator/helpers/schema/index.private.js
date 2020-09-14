@@ -3,7 +3,7 @@
 /**
  * SERVERLESS FILE BOLIER PLATE
  */
-const SERVERLESS_FILE_PATH = '/salesforce/helpers/sfdc/validator/schema';
+const SERVERLESS_FILE_PATH = '/salesforce/helpers/sfdc/validator/helpers/schema/index';
 
 const SOQL_SCHEMA = {
   type: 'object',

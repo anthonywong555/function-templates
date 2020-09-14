@@ -35,7 +35,7 @@ const reducer = require(reducerPath);
 /**
  * Load Validator Helper Methods
  */
-const validatorPath = functions['sfdc/helpers/sfdc/validator'].path;
+const validatorPath = functions['sfdc/helpers/sfdc/validator/index'].path;
 const validator = require(validatorPath);
 
 module.exports = {
