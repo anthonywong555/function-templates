@@ -24,6 +24,8 @@ const validatorHelpers = require(validatorHelpersPath);
 const loadValidator = (serverlessContext, serverlessHelper, actionType) => {
   const ajv = new Ajv({allErrors: true, jsonPointers: true});
   require('ajv-errors')(ajv);
+  ajv.addKeyword('recordKeywordChecker', validatorHelpers.keyword.ARRAY_OF_STRINGS_CHECKER);
+  ajv.addKeyword('arrayOfStringsChecker', validatorHelpers.keyword.RECORDS_KEYWORD_CHECKER);
   const targetSchema = validatorHelpers.schema.actionTypeToSchema(serverlessContext, serverlessHelper, actionType);
   const validator = ajv.compile(targetSchema);
   return validator;
