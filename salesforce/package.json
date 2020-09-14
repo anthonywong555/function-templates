@@ -1,6 +1,8 @@
 {
   "name": "salesforce",
   "dependencies": {
+    "ajv": "^6.12.5",
+    "ajv-errors": "^1.0.1",
     "jsforce": "^1.9.3",
     "salesforce-jwt-promise": "^0.1.8",
     "twilio": "^3.49.0"

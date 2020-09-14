@@ -8,6 +8,12 @@ const functions = Runtime.getFunctions();
 const cachePath = functions['sfdc/helpers/sfdc/cache/index'].path;
 const cache = require(cachePath);
 
+/**
+ * Load Constants Helper Methods
+ */
+const constantsPath = functions['sfdc/helpers/sfdc/constants/index'].path;
+const constants = require(constantsPath);
+
 /*
  * Load Ouath Helper Methods
  */
@@ -26,4 +32,17 @@ const action = require(actionPath);
 const reducerPath = functions['sfdc/helpers/sfdc/reducer/index'].path;
 const reducer = require(reducerPath);
 
-module.exports = {cache, oauth, action, reducer};
+/**
+ * Load Validator Helper Methods
+ */
+const validatorPath = functions['sfdc/helpers/sfdc/validator'].path;
+const validator = require(validatorPath);
+
+module.exports = {
+  cache,
+  constants,
+  oauth,
+  action, 
+  reducer,
+  validator
+};
