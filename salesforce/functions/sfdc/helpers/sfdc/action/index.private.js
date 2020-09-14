@@ -69,7 +69,7 @@ const driver = async(serverlessContext, serverlessEvent, serverlessHelper, sfdcC
   }
 
   if(isErrorThrown) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e); 
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', result); 
   }
 
   return result;

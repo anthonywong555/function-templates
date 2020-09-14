@@ -1,5 +1,7 @@
 'use strict';
 
+const functions = Runtime.getFunctions();
+
 /*
  * Load Generator Helper Methods
  */
