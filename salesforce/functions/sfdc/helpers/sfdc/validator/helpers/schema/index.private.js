@@ -14,7 +14,7 @@ const SOQL_SCHEMA = {
   errorMessage: 'Missing query field.'
 };
 
-const CREATE_UPDATE_SOBJECT_SCHEMA = {
+const CREATE_SOBJECT_SCHEMA = {
   type: 'object',
   required: ['sobject', 'records'],
   properties: {
@@ -61,10 +61,9 @@ const actionTypeToSchema = (serverlessContext, serverlessHelper, actionType) => 
       break;
     case serverlessHelper.sfdc.constants.ACTION_SOBJECT_CREATE:
     case serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPDATE:
-      result = CREATE_UPDATE_SOBJECT_SCHEMA;
+      result = CREATE_SOBJECT_SCHEMA;
       break;
     case serverlessHelper.sfdc.constants.ACTION_SOBJECT_READ:
-      break;
     case serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE:
       result = DELETE_SOBJECT_SCHEMA;
       break;

@@ -32,15 +32,11 @@ const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, a
         }
         break;
       case serverlessHelper.sfdc.constants.ACTION_SOBJECT_READ:
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE:
         payload = {
           sobject: serverlessEvent.sobject,
           ids: getJSON(serverlessEvent.ids)
         };
-        break;
-      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE:
-        payload = {
-          ids: getJSON(serverlessEvent.ids)
-        }
         break;
       default:
         throw new Error(`Unknown Action Type: ${actionType}`);

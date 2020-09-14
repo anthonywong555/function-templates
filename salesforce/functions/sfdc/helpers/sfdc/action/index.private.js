@@ -25,7 +25,7 @@ const execute = async(serverlessHelper, sfdcConnection, action) => {
       case serverlessHelper.sfdc.constants.ACTION_SOBJECT_CREATE:
         return await sfdcConnection.sobject(sobject).create(records);
       case serverlessHelper.sfdc.constants.ACTION_SOBJECT_READ:
-        return await sfdcConnection.sobject(sobject).create(ids);
+        return await sfdcConnection.sobject(sobject).retrieve(ids);
       case serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPDATE:
         return await sfdcConnection.sobject(sobject).update(records);
       case serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE:
