@@ -60,23 +60,20 @@ const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twil
       throw new Error(valid.errorMsg);
     }
 
-    const action = serverlessHelper.sfdc.action.generateAction(
-      serverlessContext, 
-      serverlessEvent, 
-      serverlessHelper,
-      actionType
-    );
     const sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(
       serverlessContext, 
       serverlessHelper, 
       twilioClient
     );
-    const result = await serverlessHelper.sfdc.reducer.driver(
-      serverlessContext,
+
+    const result = serverlessHelper.sfdc.action.driver(
+      serverlessContext, 
+      serverlessEvent, 
       serverlessHelper,
       sfdcConnection,
-      action
+      actionType
     );
+    
     return result;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);

@@ -3,7 +3,7 @@
 /**
  * SERVERLESS FILE BOLIER PLATE
  */
-const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/action/index';
+const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/action/helpers/generator/index';
 
 const getJSON = (targetString) => {
   let result;
@@ -19,25 +19,25 @@ const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, a
   try {
     let payload = null;
     switch(actionType) {
-      case ACTION_QUERY:
+      case serverlessHelper.sfdc.constants.ACTION_QUERY:
         payload = {
           query: serverlessEvent.query
         };
         break;
-      case ACTION_SOBJECT_CREATE:
-      case ACTION_SOBJECT_UPDATE:
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_CREATE:
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPDATE:
         payload = {
           sobject: serverlessEvent.sobject,
           records: getJSON(serverlessEvent.records)
         }
         break;
-      case ACTION_SOBJECT_READ:
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_READ:
         payload = {
           sobject: serverlessEvent.sobject,
           ids: getJSON(serverlessEvent.ids)
         };
         break;
-      case ACTION_SOBJECT_DELETE:
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE:
         payload = {
           ids: getJSON(serverlessEvent.ids)
         }

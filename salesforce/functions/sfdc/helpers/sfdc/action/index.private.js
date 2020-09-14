@@ -5,71 +5,74 @@
  */
 const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/action/index';
 
-const getJSON = (targetString) => {
-  let result;
+/*
+ * Load Action Helper Methods
+ */
+const functions = Runtime.getFunctions();
+const actionHelpersPath = functions['sfdc/helpers/sfdc/action/helpers/index'].path;
+const actionHelpers = require(actionHelpersPath);
+
+const SFDC_ERROR_INVALID_SESSION_ID = 'INVALID_SESSION_ID';
+
+const execute = async(serverlessHelper, sfdcConnection, action) => {
   try {
-    result = JSON.parse(targetString);
-  } catch (e) {
-    result = targetString;
+    const {type, payload} = action;
+    const {query, sobject, ids, records} = payload;
+
+    switch(type) {
+      case serverlessHelper.sfdc.constants.ACTION_QUERY:
+        return await sfdcConnection.query(query);
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_CREATE:
+        return await sfdcConnection.sobject(sobject).create(records);
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_READ:
+        return await sfdcConnection.sobject(sobject).create(ids);
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPDATE:
+        return await sfdcConnection.sobject(sobject).update(records);
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE:
+        return await sfdcConnection.sobject(sobject).destroy(ids);
+      default:
+        return null;
+    }
+  } catch(e) {
+    throw e;
   }
+}
+
+const driver = async(serverlessContext, serverlessEvent, serverlessHelper, sfdcConnection, actionType) => {
+  const SFDC_NUM_API_RETRY = parseInt(serverlessContext.SFDC_NUM_API_RETRY) ? 
+    parseInt(serverlessContext.SFDC_NUM_API_RETRY) : 
+    2;
+  
+  const action = actionHelpers.generator.generateAction(
+    serverlessContext, 
+    serverlessEvent, 
+    serverlessHelper,
+    actionType
+  );
+  
+  let isErrorThrown;
+  let result;
+
+  for(let i = 0; i < SFDC_NUM_API_RETRY; i++) {
+    try {
+      isErrorThrown = false;
+      result = await execute(serverlessHelper, sfdcConnection, action);
+      break;
+    } catch (e) {
+      isErrorThrown = true;
+      result = e;
+      const {name} = e;
+      if(name === SFDC_ERROR_INVALID_SESSION_ID) {
+        sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(serverlessContext, serverlessHelper, twilioClient, true);
+      }
+    }
+  }
+
+  if(isErrorThrown) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e); 
+  }
+
   return result;
 }
 
-const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, actionType) => {
-  try {
-    let payload = null;
-    switch(actionType) {
-      case ACTION_QUERY:
-        payload = {
-          query: serverlessEvent.query
-        };
-        break;
-      case ACTION_SOBJECT_CREATE:
-      case ACTION_SOBJECT_UPDATE:
-        payload = {
-          sobject: serverlessEvent.sobject,
-          records: getJSON(serverlessEvent.records)
-        }
-        break;
-      case ACTION_SOBJECT_READ:
-        payload = {
-          sobject: serverlessEvent.sobject,
-          ids: getJSON(serverlessEvent.ids)
-        };
-        break;
-      case ACTION_SOBJECT_DELETE:
-        payload = {
-          ids: getJSON(serverlessEvent.ids)
-        }
-        break;
-      default:
-        throw new Error(`Unknown Action Type: ${actionType}`);
-    }
-    const action = {
-      payload,
-      type: actionType
-    };
-
-    return action;
-  } catch (e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'generatePayload', e);
-  }
-}
-
-const generateAction = (serverlessContext, serverlessEvent, serverlessHelper, actionType) => {
-  try {
-    const payload = generatePayload(serverlessContext, serverlessEvent, serverlessHelper, actionType);
-    return payload;
-  } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'generateAction', e);
-  }
-}
-
-module.exports = {
-  generateAction, 
-  ACTION_QUERY, 
-  ACTION_SOBJECT_CREATE, 
-  ACTION_SOBJECT_READ, 
-  ACTION_SOBJECT_UPDATE, 
-  ACTION_SOBJECT_DELETE
-};
+module.exports = {driver};
