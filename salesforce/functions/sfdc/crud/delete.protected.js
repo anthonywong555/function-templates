@@ -67,7 +67,7 @@ const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twil
       twilioClient
     );
 
-    const result = serverlessHelper.sfdc.action.driver(
+    const result = await serverlessHelper.sfdc.action.driver(
       serverlessContext, 
       serverlessEvent, 
       serverlessHelper,
