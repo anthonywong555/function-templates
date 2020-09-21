@@ -5,6 +5,8 @@
  */
 const FETCH_VARIABLE_LIMIT = 100;
 
+const ERROR_MESSAGE_VARIABLE_SAME_KEY_ALREADY_EXISTS = 'Variable with same key already exists.';
+
 /**
  * Fetch a serverless variable by key. If not found return a null.
  * @param {Twilio Client} twilioClient 
@@ -55,10 +57,28 @@ const upsert = async (twilioClient, serviceSid, environmentSid, variableSid, key
         .variables(variableSid)
         .update({key, value});
     } else {
-      result = await twilioClient.serverless.services(serviceSid)
-        .environments(environmentSid)
-        .variables
-        .create({key, value});
+      try {
+        result = await twilioClient.serverless.services(serviceSid)
+          .environments(environmentSid)
+          .variables
+          .create({key, value});
+      } catch(e) {
+        /**
+         * If another execution already save the variable with the same key,
+         * then we go fetch the variable and we update the value.
+         */
+        if(e.message === ERROR_MESSAGE_VARIABLE_SAME_KEY_ALREADY_EXISTS) {
+          console.warn(ERROR_MESSAGE_VARIABLE_SAME_KEY_ALREADY_EXISTS);
+          const variable = await fetchByKey(twilioClient, serviceSid, environmentSid, key);
+          const {sid} = variable;
+          result = await twilioClient.serverless.services(serviceSid)
+            .environments(environmentSid)
+            .variables(sid)
+            .update({key, value});
+        } else {
+          throw e;
+        }
+      }
     }
     return result;
   } catch (e) {

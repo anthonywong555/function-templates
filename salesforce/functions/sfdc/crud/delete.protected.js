@@ -15,14 +15,16 @@ const SERVERLESS_FILE_PATH = '/sfdc/crud/delete';
  * @returns {Object} 
  */
 exports.handler = async (context, event, callback) => {
-  try {
-    const twilioClient = context.getTwilioClient();
-    const serverlessHelper = loadServerlessModules();
-    const result = await driver(context, event, serverlessHelper, twilioClient);
-    return callback(null, result);
-  } catch (e) {
-    return callback(e);
-  }
+  setTimeout(async() => {
+    try {
+      const twilioClient = context.getTwilioClient();
+      const serverlessHelper = loadServerlessModules();
+      const result = await driver(context, event, serverlessHelper, twilioClient);
+      return callback(null, result);
+    } catch (e) {
+      return callback(e);
+    }
+  }, 3000);
 };
 
 /**

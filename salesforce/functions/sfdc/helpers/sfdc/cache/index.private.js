@@ -41,6 +41,7 @@ const updateSFDCOAuthCache = async(serverlessContext, serverlessHelper, twilioCl
 
     const sfdcOauthResponse = await serverlessHelper.sfdc.oauth.OAuthToSFDC(serverlessContext, serverlessHelper);
     const sfdcOauthResponseStringify = JSON.stringify(sfdcOauthResponse);
+
     await serverlessHelper
       .twilio
       .serverless
