@@ -15,16 +15,14 @@ const SERVERLESS_FILE_PATH = '/sfdc/crud/update';
  * @returns {Object} 
  */
 exports.handler = async (context, event, callback) => {
-  setTimeout(async() => {
-    try {
-      const twilioClient = context.getTwilioClient();
-      const serverlessHelper = loadServerlessModules();
-      const result = await driver(context, event, serverlessHelper, twilioClient);
-      return callback(null, result);
-    } catch (e) {
-      return callback(e);
-    }
-  }, 3000);
+  try {
+    const twilioClient = context.getTwilioClient();
+    const serverlessHelper = loadServerlessModules();
+    const result = await driver(context, event, serverlessHelper, twilioClient);
+    return callback(null, result);
+  } catch(e) {
+    return callback(e);
+  }
 };
 
 /**
@@ -52,31 +50,9 @@ const loadServerlessModules = () => {
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
     const actionType = serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPDATE;
-    const valid = serverlessHelper.sfdc.validator.isValidPayload(
-      serverlessContext,
-      serverlessEvent,
-      serverlessHelper,
-      actionType
-    );
-    
-    if(!valid.isValid) {
-      throw new Error(valid.errorMsg);
-    }
-
-    const sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(
-      serverlessContext, 
-      serverlessHelper, 
-      twilioClient
-    );
-
-    const result = await serverlessHelper.sfdc.action.driver(
-      serverlessContext, 
-      serverlessEvent, 
-      serverlessHelper,
-      sfdcConnection,
-      actionType
-    );
-    
+    const timerInMillSecs = serverlessHelper.twilio.serverless.getTimeoutTimeInMillSecs(serverlessContext);
+    await serverlessHelper.devtools.delay(timerInMillSecs);
+    const result = await serverlessHelper.sfdc.driver(serverlessContext, serverlessEvent, serverlessHelper, twilioClient, actionType);
     return result;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);

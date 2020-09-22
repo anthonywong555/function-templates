@@ -32,10 +32,53 @@ const action = require(actionPath);
 const validatorPath = functions['sfdc/helpers/sfdc/validator/index'].path;
 const validator = require(validatorPath);
 
+/**
+ * Main Salesforce Driver
+ * @param {Object} serverlessContext 
+ * @param {Object} serverlessEvent 
+ * @param {Object} serverlessHelper 
+ * @param {Object} twilioClient 
+ * @param {String} actionType 
+ * @returns {Object}
+ */
+const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient, actionType) => {
+  try {
+    const valid = serverlessHelper.sfdc.validator.isValidPayload(
+      serverlessContext,
+      serverlessEvent,
+      serverlessHelper,
+      actionType
+    );
+    
+    if(!valid.isValid) {
+      throw new Error(valid.errorMsg);
+    }
+
+    const sfdcConnection = await serverlessHelper.sfdc.cache.getSFDCConnection(
+      serverlessContext, 
+      serverlessHelper, 
+      twilioClient
+    );
+
+    const result = await serverlessHelper.sfdc.action.driver(
+      serverlessContext, 
+      serverlessEvent, 
+      serverlessHelper,
+      sfdcConnection,
+      actionType
+    );
+    
+    return result;
+  } catch(e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);
+  }
+}
+
 module.exports = {
   cache,
   constants,
   oauth,
   action,
-  validator
+  validator,
+  driver
 };

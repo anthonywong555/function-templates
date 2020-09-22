@@ -16,4 +16,8 @@ const formatErrorMsg = (serverlessContext, filePath, functionName, error) => {
   return result;
 }
 
-module.exports = {formatErrorMsg};
+const delay = async (timeoutInMill) => {
+  return new Promise(resolve => setTimeout(resolve, timeoutInMill));
+}
+
+module.exports = {formatErrorMsg, delay};
