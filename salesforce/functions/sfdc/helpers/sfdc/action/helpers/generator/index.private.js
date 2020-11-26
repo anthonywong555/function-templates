@@ -38,6 +38,13 @@ const generatePayload = (serverlessContext, serverlessEvent, serverlessHelper, a
           ids: getJSON(serverlessEvent.ids)
         };
         break;
+      case serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPSERT:
+        payload = {
+          sobject: serverlessEvent.sobject,
+          records: getJSON(serverlessEvent.records),
+          extIdField: serverlessEvent.extIdField
+        };
+        break;
       default:
         throw new Error(`Unknown Action Type: ${actionType}`);
     }

@@ -52,6 +52,27 @@ const DELETE_SOBJECT_SCHEMA = {
   }
 };
 
+const UPSERT_SOBJECT_SCHEMA = {
+  type: 'object',
+  required: ['sobject', 'records', 'extIdField'],
+  properties: {
+    sobject: { type: 'string' },
+    records: { 
+      type: ['string', 'object', 'array'],
+      recordKeywordChecker: true
+    },
+    extIdField: { type: 'string' }
+  },
+  errorMessage: {
+    type: 'should be an object',
+    required: {
+      sobject: 'sobject field is required. It must be a string.',
+      records: 'records field is required. It can be either JSON or a string that can be JSON.parse()',
+      extIdField: 'extIdField field is required. It must be a string.'
+    }
+  }
+};
+
 const actionTypeToSchema = (serverlessContext, serverlessHelper, actionType) => {
   let result;
   
@@ -66,6 +87,9 @@ const actionTypeToSchema = (serverlessContext, serverlessHelper, actionType) => 
     case serverlessHelper.sfdc.constants.ACTION_SOBJECT_READ:
     case serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE:
       result = DELETE_SOBJECT_SCHEMA;
+      break;
+    case serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPSERT:
+      result = UPSERT_SOBJECT_SCHEMA;
       break;
     default:
       const e = new Error(`Invalid actionType: ${actionType}`);

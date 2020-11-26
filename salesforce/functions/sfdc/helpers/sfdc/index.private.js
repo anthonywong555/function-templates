@@ -1,5 +1,7 @@
 'use strict';
 
+const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/index';
+
 const functions = Runtime.getFunctions();
 
 /*
