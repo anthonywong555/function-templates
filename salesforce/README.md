@@ -138,6 +138,14 @@ In addition you will need to:
 | sobject   	| Salesforce SObject API Name 	| Account              	| String                                       	| true     	|
 | ids       	| Id of Record(s) to delete   	| "0013t00001bzcoqAAA" 	| String, Array of Strings, Stringify of Array 	| true     	|
 
+`/sfdc/api/upsert` expects the following parameters:
+
+| Parameter  | Description                  | Example                  | Type                                           | Required |
+|------------|------------------------------|--------------------------|------------------------------------------------|----------|
+| sobject    | Salesforce SObject API Name  | Account                  | String                                         | true     |
+| records    | Record(s) to upsert          | {"Name": "Test Account"} | JSON, Array of JSON, Stringify of JSON / Array | true     |
+| extIdField | SObject External Id API Name | External_Id__c           | String                                         | true     |
+
 ## Create a new project with the template
 
 1. Install the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart#install-twilio-cli)
