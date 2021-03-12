@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * This function allow user to make Create a Record inside Salesforce
+ * This function allow user to create Record(s) inside Salesforce
  * Reference: https://jsforce.github.io/document/#create
  */
 
@@ -20,7 +20,7 @@ exports.handler = async (context, event, callback) => {
     const serverlessHelper = loadServerlessModules();
     const result = await driver(context, event, serverlessHelper, twilioClient);
     return callback(null, result);
-  } catch (e) {
+  } catch(e) {
     return callback(e);
   }
 };
@@ -49,13 +49,10 @@ const loadServerlessModules = () => {
  */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
-    const {sObject} = serverlessEvent;
-    const record = 
-      typeof serverlessEvent.record === 'string' ? 
-      JSON.parse(serverlessEvent.record) : 
-      serverlessEvent.record;
-    const sfdcConn = await serverlessHelper.sfdc.connection.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
-    const result = await sfdcConn.sobject(sObject).create(record);
+    const actionType = serverlessHelper.sfdc.constants.ACTION_SOBJECT_CREATE;
+    const timerInMillSecs = serverlessHelper.twilio.serverless.getTimeoutTimeInMillSecs(serverlessContext);
+    await serverlessHelper.devtools.delay(timerInMillSecs);
+    const result = await serverlessHelper.sfdc.driver(serverlessContext, serverlessEvent, serverlessHelper, twilioClient, actionType);
     return result;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);

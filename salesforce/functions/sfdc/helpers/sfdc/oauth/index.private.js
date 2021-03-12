@@ -16,12 +16,12 @@ const fs = require('fs');
 const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/oauth/index';
 
 /**
- * Oauth 2.0 User - Agent
+ * Oauth 2.0 User - Password
  * @param {Object} serverlessContext 
  * @param {Object} serverlessHelper
  * @returns {Object} 
  */
-const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
+const ouathSFDCByUserPassword = async(serverlessContext, serverlessHelper) => {
   try {
     const conn = new jsforce.Connection({
       oauth2 : {
@@ -42,7 +42,7 @@ const ouathSFDCByUserAgent = async(serverlessContext, serverlessHelper) => {
     };
     return result;
   } catch(e) {
-    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'ouathSFDCByUserAgent', e);
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'ouathSFDCByUserPassword', e);
   }
 }
 
@@ -105,5 +105,22 @@ const ouathSFDCByServerToServer = async(serverlessContext, serverlessHelper) => 
   }
 }
 
+const OAuthToSFDC = async(serverlessContext, serverlessHelper) => {
+  try {
+    const {SFDC_IS_OAUTH_USER_PASSWORD_FLOW} = serverlessContext;
+    let sfdcOauthResponse;
 
-module.exports = {ouathSFDCByUserAgent, ouathSFDCByServerToServer};
+    if(SFDC_IS_OAUTH_USER_PASSWORD_FLOW === 'true') {
+      // OAuth 2.0 User-Password Flow
+      sfdcOauthResponse = await ouathSFDCByUserPassword(serverlessContext, serverlessHelper);
+    } else {
+      // OAuth 2.0 JWT Bearer Flow for Server-to-Server
+      sfdcOauthResponse = await ouathSFDCByServerToServer(serverlessContext, serverlessHelper);
+    }
+    return sfdcOauthResponse;
+  } catch (e) {
+    throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'OAuthToSFDC', e);
+  }
+}
+
+module.exports = {OAuthToSFDC};

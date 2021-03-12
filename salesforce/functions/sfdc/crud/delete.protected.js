@@ -1,11 +1,12 @@
 'use strict';
 
 /**
- * This function allow user to make SOQL against Salesforce
+ * This function allow user to delete Record(s) inside Salesforce
+ * Reference: https://jsforce.github.io/document/#delete
  */
 
-const SERVERLESS_FILE_PATH = '/sfdc/query/soql';
-
+const SERVERLESS_FILE_PATH = '/sfdc/crud/delete';
+ 
 /**
  * Twilio calls this method
  * @param {Object} context 
@@ -48,7 +49,7 @@ const loadServerlessModules = () => {
  */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
-    const actionType = serverlessHelper.sfdc.constants.ACTION_QUERY;
+    const actionType = serverlessHelper.sfdc.constants.ACTION_SOBJECT_DELETE;
     const timerInMillSecs = serverlessHelper.twilio.serverless.getTimeoutTimeInMillSecs(serverlessContext);
     await serverlessHelper.devtools.delay(timerInMillSecs);
     const result = await serverlessHelper.sfdc.driver(serverlessContext, serverlessEvent, serverlessHelper, twilioClient, actionType);

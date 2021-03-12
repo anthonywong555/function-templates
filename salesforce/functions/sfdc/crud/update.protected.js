@@ -1,10 +1,11 @@
 'use strict';
 
 /**
- * This function allow user to make SOQL against Salesforce
+ * This function allow user to update Record(s) inside Salesforce
+ * Reference: https://jsforce.github.io/document/#update
  */
 
-const SERVERLESS_FILE_PATH = '/sfdc/search/search';
+const SERVERLESS_FILE_PATH = '/sfdc/crud/update';
  
 /**
  * Twilio calls this method
@@ -19,7 +20,7 @@ exports.handler = async (context, event, callback) => {
     const serverlessHelper = loadServerlessModules();
     const result = await driver(context, event, serverlessHelper, twilioClient);
     return callback(null, result);
-  } catch (e) {
+  } catch(e) {
     return callback(e);
   }
 };
@@ -48,9 +49,10 @@ const loadServerlessModules = () => {
  */
 const driver = async (serverlessContext, serverlessEvent, serverlessHelper, twilioClient) => {
   try {
-    const {search} = serverlessEvent;
-    const sfdcConn = await serverlessHelper.sfdc.connection.getSfdcConnection(serverlessContext, serverlessHelper, twilioClient);
-    const result = await sfdcConn.query(search);
+    const actionType = serverlessHelper.sfdc.constants.ACTION_SOBJECT_UPDATE;
+    const timerInMillSecs = serverlessHelper.twilio.serverless.getTimeoutTimeInMillSecs(serverlessContext);
+    await serverlessHelper.devtools.delay(timerInMillSecs);
+    const result = await serverlessHelper.sfdc.driver(serverlessContext, serverlessEvent, serverlessHelper, twilioClient, actionType);
     return result;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'driver', e);
