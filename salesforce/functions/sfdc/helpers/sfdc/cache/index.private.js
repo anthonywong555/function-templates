@@ -30,12 +30,12 @@ const SERVERLESS_FILE_PATH = '/sfdc/helpers/sfdc/connection/index';
  */
 const updateSFDCOAuthCache = async(serverlessContext, serverlessHelper, twilioClient) => {
   try {
-    const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
+    const {SERVICE_SID, ENVIRONMENT_SID} = serverlessContext;
     const sfdcOauthFromEnv = await serverlessHelper
       .twilio
       .serverless
       .variable
-      .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
+      .fetchByKey(twilioClient, SERVICE_SID, ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
     
     const envSid = sfdcOauthFromEnv ? sfdcOauthFromEnv.sid : null;
 
@@ -46,7 +46,7 @@ const updateSFDCOAuthCache = async(serverlessContext, serverlessHelper, twilioCl
       .twilio
       .serverless
       .variable
-      .upsert(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, envSid, SFDC_OAUTH_RESPONSE, sfdcOauthResponseStringify);
+      .upsert(twilioClient, SERVICE_SID, ENVIRONMENT_SID, envSid, SFDC_OAUTH_RESPONSE, sfdcOauthResponseStringify);
     return sfdcOauthResponse;
   } catch (e) {
     throw serverlessHelper.devtools.formatErrorMsg(serverlessContext, SERVERLESS_FILE_PATH, 'updateSFDCOAuthCache', e);
@@ -85,16 +85,10 @@ const isValidOAuthResponse = (sfdcOauthResponseStringify) => {
  */
 const getSFDCOAuthFromCache = async (serverlessContext, serverlessHelper, twilioClient) => {
   try {
-    const {TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID} = serverlessContext;
-    const sfdcOauthFromEnv = await serverlessHelper
-      .twilio
-      .serverless
-      .variable
-      .fetchByKey(twilioClient, TWILIO_SERVERLESS_SERVICE_SID, TWILIO_SERVERLESS_ENVIRONMENT_SID, SFDC_OAUTH_RESPONSE);
-    let sfdcOauthResponse = null;
+    let sfdcOauthResponse = serverlessContext[SFDC_OAUTH_RESPONSE];
 
-    if(sfdcOauthFromEnv && isValidOAuthResponse(sfdcOauthFromEnv.value)) {
-      sfdcOauthResponse = JSON.parse(sfdcOauthFromEnv.value);
+    if(sfdcOauthResponse && isValidOAuthResponse(sfdcOauthResponse)) {
+      sfdcOauthResponse = JSON.parse(sfdcOauthResponse);
     } else {
       sfdcOauthResponse = await updateSFDCOAuthCache(serverlessContext, serverlessHelper, twilioClient);
     }
